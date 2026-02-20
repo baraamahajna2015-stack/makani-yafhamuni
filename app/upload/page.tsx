@@ -1,6 +1,7 @@
- 'use client';
+'use client';
 
 import React, { useState } from 'react';
+import { FORM, ERRORS, UPLOAD_PAGE } from '../ui-strings';
 
 export default function UploadPage() {
   const [age, setAge] = useState<number | ''>('');
@@ -15,11 +16,11 @@ export default function UploadPage() {
     setResult(null);
 
     if (!imageFile) {
-      setError('Please select an image.');
+      setError(ERRORS.selectImage);
       return;
     }
     if (age === '' || age <= 0) {
-      setError('Please enter a valid age.');
+      setError(ERRORS.validAge);
       return;
     }
 
@@ -45,7 +46,7 @@ export default function UploadPage() {
         goal: data.goal,
       });
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      setError(ERRORS.tryAgain);
     } finally {
       setLoading(false);
     }
@@ -53,6 +54,7 @@ export default function UploadPage() {
 
   return (
     <main
+      dir="rtl"
       style={{
         minHeight: '100vh',
         display: 'flex',
@@ -72,11 +74,11 @@ export default function UploadPage() {
           boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
         }}
       >
-        <h1 style={{ fontSize: 20, marginBottom: 16 }}>Upload & Analyze</h1>
+        <h1 style={{ fontSize: 20, marginBottom: 16 }}>{UPLOAD_PAGE.title}</h1>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <label style={{ fontSize: 14 }}>
-            Image
+            {UPLOAD_PAGE.image}
             <input
               type="file"
               accept="image/*"
@@ -89,7 +91,7 @@ export default function UploadPage() {
           </label>
 
           <label style={{ fontSize: 14 }}>
-            Age
+            {UPLOAD_PAGE.age}
             <input
               type="number"
               min={1}
@@ -103,7 +105,7 @@ export default function UploadPage() {
                 width: '100%',
                 padding: '6px 8px',
                 borderRadius: 4,
-                border: '1px solid '#d0d0d0',
+                border: '1px solid #dddddd',
                 fontSize: 14,
               }}
             />
@@ -123,7 +125,7 @@ export default function UploadPage() {
               cursor: loading ? 'default' : 'pointer',
             }}
           >
-            {loading ? 'Analyzing...' : 'Analyze'}
+            {loading ? UPLOAD_PAGE.analyzing : UPLOAD_PAGE.analyze}
           </button>
         </form>
 
@@ -144,10 +146,10 @@ export default function UploadPage() {
             }}
           >
             <div>
-              <strong>Activity:</strong> {result.activity}
+              <strong>{UPLOAD_PAGE.activity}:</strong> {result.activity}
             </div>
             <div style={{ marginTop: 4 }}>
-              <strong>Goal:</strong> {result.goal}
+              <strong>{UPLOAD_PAGE.goal}:</strong> {result.goal}
             </div>
           </div>
         )}

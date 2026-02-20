@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { FORM, HERO, SECTIONS, ERRORS, USER_MODE_LABELS } from "./ui-strings";
 
 type TherapeuticFocus = "sensory_regulation" | "motor_planning" | "executive_function" | "fine_motor" | "gross_motor" | "bilateral_coordination";
 
@@ -18,10 +19,17 @@ type ArabicFormattedActivity = {
   formattedArabic: {
     activityName: string;
     therapeuticGoal: string;
+    targetSkill?: string;
     implementationSteps: string[];
+    suggestedDuration?: string;
     ageAdaptations: string;
     successIndicators: string;
     safetyWarnings: string;
+    clinicalRationale?: string;
+    suggestedProgression?: string;
+    environmentalModificationTips?: string;
+    functionalOutcome?: string;
+    environmentalAdaptation?: string;
   };
 };
 
@@ -59,13 +67,13 @@ export default function Home() {
     setResult(null);
 
     if (!imageFile) {
-      setError("Please select an image.");
+      setError(ERRORS.selectImage);
       return;
     }
 
     const ageNumber = Number(age);
     if (!ageNumber || ageNumber <= 0) {
-      setError("Please enter a valid age.");
+      setError(ERRORS.validAge);
       return;
     }
 
@@ -87,34 +95,32 @@ export default function Home() {
       const data: ApiResponse = await res.json();
 
       if (!res.ok || "error" in data) {
-        setError(data.error || "Something went wrong.");
+        setError(data.error || ERRORS.somethingWrong);
         return;
       }
 
       setResult(data);
     } catch (err) {
-      setError("Failed to reach the server.");
+      setError(ERRORS.serverError);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black" dir="rtl">
       <main className="w-full max-w-2xl rounded-2xl bg-white p-8 shadow-sm dark:bg-zinc-950">
         <h1 className="mb-2 text-3xl font-semibold tracking-tight text-black dark:text-zinc-50">
-          Makani Activity Ideas
+          {HERO.title}
         </h1>
         <p className="mb-8 text-sm text-zinc-600 dark:text-zinc-400">
-          Upload an image of your child&apos;s environment and enter their age.
-          The image is processed only in memory, and any faces or people are
-          ignored.
+          {HERO.subtitle}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-zinc-800 dark:text-zinc-200">
-              Image
+              {FORM.image}
             </label>
             <input
               type="file"
@@ -129,7 +135,7 @@ export default function Home() {
 
           <div>
             <label className="block text-sm font-medium text-zinc-800 dark:text-zinc-200">
-              Child&apos;s age (years)
+              {FORM.childAgeYears}
             </label>
             <input
               type="number"
@@ -138,13 +144,13 @@ export default function Home() {
               value={age}
               onChange={(e) => setAge(e.target.value)}
               className="mt-1 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none ring-0 transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:border-zinc-600 dark:focus:ring-zinc-800"
-              placeholder="e.g. 5"
+              placeholder={FORM.agePlaceholder}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-zinc-800 dark:text-zinc-200">
-              User mode
+              {FORM.userMode}
             </label>
             <div className="mt-1 flex gap-0 overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
               <button
@@ -156,7 +162,7 @@ export default function Home() {
                     : "bg-white text-zinc-600 hover:bg-zinc-50 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800"
                 }`}
               >
-                Parent
+                {USER_MODE_LABELS.parent}
               </button>
               <button
                 type="button"
@@ -167,7 +173,7 @@ export default function Home() {
                     : "bg-white text-zinc-600 hover:bg-zinc-50 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800"
                 }`}
               >
-                Therapist
+                {USER_MODE_LABELS.therapist}
               </button>
             </div>
           </div>
@@ -177,7 +183,7 @@ export default function Home() {
             disabled={loading}
             className="inline-flex h-10 items-center justify-center rounded-md bg-zinc-900 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-500 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200"
           >
-            {loading ? "Analyzing..." : "Generate Activities"}
+            {loading ? FORM.submitting : FORM.submit}
           </button>
         </form>
 
@@ -189,11 +195,11 @@ export default function Home() {
           <section className="mt-8 space-y-4">
             <div>
               <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-                Detected objects
+                {SECTIONS.detectedObjects}
               </h2>
               {result.labels.length === 0 ? (
                 <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                  No non-human objects detected. Try a different image.
+                  {SECTIONS.noObjectsDetected}
                 </p>
               ) : (
                 <ul className="mt-1 flex flex-wrap gap-2 text-sm">
@@ -213,7 +219,7 @@ export default function Home() {
             {result.activitiesArabic.length > 0 && (
               <div>
                 <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-                  Suggested activities
+                  {SECTIONS.suggestedActivities}
                 </h2>
                 <ul className="mt-2 space-y-6 text-sm text-zinc-800 dark:text-zinc-100">
                   {result.activitiesArabic.map((activity, index) => (
@@ -242,6 +248,46 @@ export default function Home() {
                             {activity.formattedArabic.therapeuticGoal}
                           </p>
                         </div>
+                        {activity.formattedArabic.targetSkill && (
+                          <div>
+                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                              المهارة المستهدفة:
+                            </p>
+                            <p className="text-zinc-700 dark:text-zinc-300">
+                              {activity.formattedArabic.targetSkill}
+                            </p>
+                          </div>
+                        )}
+                        {activity.formattedArabic.clinicalRationale && (
+                          <div>
+                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                              المبرر السريري:
+                            </p>
+                            <p className="text-zinc-700 dark:text-zinc-300">
+                              {activity.formattedArabic.clinicalRationale}
+                            </p>
+                          </div>
+                        )}
+                        {activity.formattedArabic.functionalOutcome && (
+                          <div>
+                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                              النتيجة الوظيفية:
+                            </p>
+                            <p className="text-zinc-700 dark:text-zinc-300">
+                              {activity.formattedArabic.functionalOutcome}
+                            </p>
+                          </div>
+                        )}
+                        {activity.formattedArabic.environmentalAdaptation && (
+                          <div>
+                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                              التكيف البيئي:
+                            </p>
+                            <p className="text-zinc-700 dark:text-zinc-300">
+                              {activity.formattedArabic.environmentalAdaptation}
+                            </p>
+                          </div>
+                        )}
                         <div>
                           <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-2">
                             3. طريقة التنفيذ:
@@ -270,10 +316,40 @@ export default function Home() {
                             {activity.formattedArabic.successIndicators}
                           </p>
                         </div>
+                        {activity.formattedArabic.suggestedDuration && (
+                          <div>
+                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                              المدة المقترحة:
+                            </p>
+                            <p className="text-zinc-700 dark:text-zinc-300">
+                              {activity.formattedArabic.suggestedDuration}
+                            </p>
+                          </div>
+                        )}
+                        {activity.formattedArabic.suggestedProgression && (
+                          <div>
+                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                              التقدم المقترح (ترقية/تخفيض):
+                            </p>
+                            <p className="text-zinc-700 dark:text-zinc-300">
+                              {activity.formattedArabic.suggestedProgression}
+                            </p>
+                          </div>
+                        )}
+                        {activity.formattedArabic.environmentalModificationTips && (
+                          <div>
+                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                              نصائح تعديل البيئة:
+                            </p>
+                            <p className="text-zinc-700 dark:text-zinc-300">
+                              {activity.formattedArabic.environmentalModificationTips}
+                            </p>
+                          </div>
+                        )}
                         {activity.formattedArabic.safetyWarnings && (
                           <div>
                             <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
-                              6. تحذيرات أمان:
+                              تحذيرات أمان:
                             </p>
                             <p className="text-zinc-700 dark:text-zinc-300">
                               {activity.formattedArabic.safetyWarnings}

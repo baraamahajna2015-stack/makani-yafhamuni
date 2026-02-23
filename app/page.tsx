@@ -33,6 +33,14 @@ type ArabicFormattedActivity = {
   };
 };
 
+type ReasonedElement = {
+  rawLabel: string;
+  elementNameAr: string;
+  functionalCategory: string;
+  contextualInterpretation: string;
+  confidenceAfterProcessing: number;
+};
+
 type ApiResponse =
   | {
       age: number;
@@ -41,6 +49,7 @@ type ApiResponse =
       activities: Activity[];
       activitiesArabic: ArabicFormattedActivity[];
       userMode: "parent" | "therapist";
+      reasonedElements?: ReasonedElement[];
       error?: undefined;
     }
   | {
@@ -51,6 +60,7 @@ type ApiResponse =
       activities?: undefined;
       activitiesArabic?: undefined;
       userMode?: undefined;
+      reasonedElements?: undefined;
     };
 
 export default function Home() {
@@ -197,23 +207,58 @@ export default function Home() {
               <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
                 {SECTIONS.detectedObjects}
               </h2>
-              {result.labels.length === 0 ? (
-                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                  {SECTIONS.noObjectsDetected}
-                </p>
-              ) : (
-                <ul className="mt-1 flex flex-wrap gap-2 text-sm">
-                  {result.labelsArabic.map((labelArabic, index) => (
-                    <li
-                      key={result.labels[index]}
-                      className="rounded-full bg-zinc-100 px-3 py-1 text-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
-                      dir="rtl"
-                    >
-                      {labelArabic}
-                    </li>
-                  ))}
-                </ul>
-              )}
+              {(() => {
+                const useReasoned =
+                  result.reasonedElements &&
+                  result.reasonedElements.length > 0;
+                const elements = useReasoned
+                  ? result.reasonedElements!
+                  : result.labelsArabic.map((labelArabic, i) => ({
+                      elementNameAr: labelArabic,
+                      functionalCategory: "",
+                      confidenceAfterProcessing: 0,
+                    }));
+                const isEmpty = elements.length === 0;
+                if (isEmpty) {
+                  return (
+                    <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                      {SECTIONS.noObjectsDetected}
+                    </p>
+                  );
+                }
+                return (
+                  <ul className="mt-1 space-y-2 text-sm">
+                    {elements.map((el, index) => (
+                      <li
+                        key={
+                          useReasoned
+                            ? (el as ReasonedElement).rawLabel + index
+                            : `fallback-${index}`
+                        }
+                        className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900"
+                        dir="rtl"
+                      >
+                        <span className="font-medium text-zinc-800 dark:text-zinc-100">
+                          {el.elementNameAr}
+                        </span>
+                        {useReasoned && (el as ReasonedElement).functionalCategory && (
+                          <>
+                            <span className="mx-1.5 text-zinc-500">•</span>
+                            <span className="text-zinc-600 dark:text-zinc-400">
+                              {(el as ReasonedElement).functionalCategory}
+                            </span>
+                          </>
+                        )}
+                        {useReasoned && (
+                          <span className="mr-2 text-zinc-500 dark:text-zinc-400">
+                            (ثقة: {Math.round((el as ReasonedElement).confidenceAfterProcessing * 100)}٪)
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                );
+              })()}
             </div>
 
             {result.activitiesArabic.length > 0 && (

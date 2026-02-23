@@ -596,8 +596,8 @@ function translateObjectLabel(label: string): string {
     }
   }
   
-  // لا نُخرج كلمات إنجليزية: استخدم وصفاً عربياً عاماً للعنصر
-  return 'عنصر من بيئة الطفل';
+  // No Arabic mapping: return the actual detected label (English) instead of a fixed placeholder
+  return baseLabel.replace(/_/g, ' ');
 }
 
 function translateAgeDescriptor(age: number, userMode: UserMode): string {

@@ -250,11 +250,6 @@ export default function Home() {
                             </span>
                           </>
                         )}
-                        {useReasoned && (
-                          <span className="mr-2 text-zinc-500 dark:text-zinc-400">
-                            (ثقة: {Math.round((el as ReasonedElement).confidenceAfterProcessing * 100)}٪)
-                          </span>
-                        )}
                       </li>
                     ))}
                   </ul>

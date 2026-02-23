@@ -2,11 +2,11 @@
 
 :root {
   --background: radial-gradient(ellipse 140% 90% at 15% 0%, rgba(255, 255, 255, 0.7) 0%, transparent 50%),
-    radial-gradient(ellipse 100% 120% at 85% 100%, rgba(238, 242, 248, 0.5) 0%, transparent 50%),
-    linear-gradient(180deg, #fafaf9 0%, #f6f7fa 45%, #eef1f6 100%);
-  --background-solid: #fafaf9;
+    radial-gradient(ellipse 100% 120% at 85% 100%, rgba(240, 243, 248, 0.5) 0%, transparent 50%),
+    linear-gradient(180deg, #f8f9fc 0%, #f4f6fa 45%, #eef1f6 100%);
+  --background-solid: #f8f9fc;
   --foreground: #171717;
-  --warm-green-tint: #f6f7fa;
+  --background-mid: #f4f6fa;
 }
 
 @theme inline {
@@ -18,12 +18,12 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: radial-gradient(ellipse 130% 80% at 20% 0%, rgba(30, 35, 45, 0.5) 0%, transparent 50%),
-      radial-gradient(ellipse 100% 100% at 80% 100%, rgba(25, 30, 40, 0.4) 0%, transparent 50%),
-      linear-gradient(180deg, #0f1218 0%, #0c0e14 50%, #0a0a0d 100%);
+    --background: radial-gradient(ellipse 130% 80% at 20% 0%, rgba(28, 32, 42, 0.5) 0%, transparent 50%),
+      radial-gradient(ellipse 100% 100% at 80% 100%, rgba(24, 28, 38, 0.4) 0%, transparent 50%),
+      linear-gradient(180deg, #0f1218 0%, #0d1016 50%, #0a0c10 100%);
     --background-solid: #0f1218;
     --foreground: #ededed;
-    --warm-green-tint: #0c0e14;
+    --background-mid: #0d1016;
   }
 }
 

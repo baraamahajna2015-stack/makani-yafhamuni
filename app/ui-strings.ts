@@ -35,6 +35,13 @@ export const SECTIONS = {
   suggestedActivities: "الأنشطة المقترحة",
 } as const;
 
+/** AI Insight box (below generated activities) */
+export const INSIGHT = {
+  title: "ملاحظة تحليلية",
+  summary:
+    "تمت صياغة الأنشطة أعلاه بناءً على عناصر البيئة المكتشفة وتناسبها مع عمر الطفل لتحقيق أهداف علاجية واضحة.",
+} as const;
+
 /** Error messages */
 export const ERRORS = {
   selectImage: "الرجاء اختيار صورة.",

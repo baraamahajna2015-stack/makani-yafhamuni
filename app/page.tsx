@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, type FormEvent } from "react";
-import { FORM, HERO, SECTIONS, ERRORS, USER_MODE_LABELS } from "./ui-strings";
+import { FORM, HERO, SECTIONS, ERRORS, USER_MODE_LABELS, INSIGHT } from "./ui-strings";
 
 const LOADING_MESSAGES = [
   "جاري تحليل عناصر البيئة...",
@@ -435,6 +435,14 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
+                <div className="mt-10 animate-result-enter rounded-xl border border-zinc-200/80 bg-zinc-50/80 px-5 py-4 opacity-0 shadow-sm backdrop-blur-sm dark:border-zinc-700/60 dark:bg-zinc-800/50" style={{ animationDelay: `${(result.activitiesArabic?.length ?? 0) * 90}ms` }} dir="rtl">
+                  <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#1a2f4a] dark:text-[#94a8c4]">
+                    {INSIGHT.title}
+                  </p>
+                  <p className="text-sm leading-loose text-zinc-700 dark:text-zinc-300">
+                    {INSIGHT.summary}
+                  </p>
+                </div>
               </div>
             )}
           </section>

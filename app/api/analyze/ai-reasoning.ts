@@ -1,7 +1,7 @@
 /**
  * AI reasoning layer on top of MobileNet.
  * Interprets raw detection labels in real-world environmental terms,
- * outputs context-aware Arabic results with functional categories and confidence.
+ * outputs context-aware Arabic results with functional categories (confidence used internally only, never displayed).
  */
 
 export interface RawPrediction {
@@ -18,7 +18,7 @@ export interface ReasonedElement {
   functionalCategory: string;
   /** تفسير سياقي قصير — reflects environment understanding */
   contextualInterpretation: string;
-  /** درجة الثقة بعد المعالجة (0–1) */
+  /** درجة الثقة بعد المعالجة (0–1) — للاستخدام الداخلي فقط، لا تُعرض في الواجهة */
   confidenceAfterProcessing: number;
 }
 
@@ -61,7 +61,7 @@ function interpretOne(
   const n = norm(className);
   const base = n.replace(/\s+/g, '');
 
-  // Exclude irrelevant or culturally inappropriate for clinical/home environment
+  // Exclude irrelevant or culturally inappropriate for therapeutic/home environment
   const exclude = ['swastika', 'confederate', 'cartoon', 'comic', 'mask', 'weapon', 'gun', 'rifle', 'grenade'];
   if (exclude.some((w) => n.includes(w))) return null;
 
@@ -137,7 +137,7 @@ function interpretOne(
     { key: 'bathtub', nameAr: 'حوض استحمام', category: FUNCTIONAL_CATEGORIES.hygiene, context: 'مساحة مائية؛ تُستخدم تحت إشراف لتهدئة حسية عند الحاجة.' },
     { key: 'tub', nameAr: 'حوض', category: FUNCTIONAL_CATEGORIES.hygiene, context: 'وعاء كبير؛ الاستخدام يكون بإشراف وفق السياق.' },
     { key: 'sink', nameAr: 'حوض غسيل', category: FUNCTIONAL_CATEGORIES.hygiene, context: 'سطح غسل ثابت؛ يدعم الأنشطة اليومية والتسلسل.' },
-    { key: 'toilet', nameAr: 'مرحاض', category: FUNCTIONAL_CATEGORIES.hygiene, context: 'عنصر حمام ثابت؛ يُراعى في التوجيه اليومي دون تفصيل سريري.' },
+    { key: 'toilet', nameAr: 'مرحاض', category: FUNCTIONAL_CATEGORIES.hygiene, context: 'عنصر حمام ثابت؛ يُراعى في التوجيه اليومي دون تفصيل علاجي.' },
     { key: 'refrigerator', nameAr: 'ثلاجة', category: FUNCTIONAL_CATEGORIES.electronics, context: 'جهاز ثابت في المطبخ؛ مرجع مكاني دون استخدام في الأنشطة العلاجية.' },
     { key: 'oven', nameAr: 'فرن', category: FUNCTIONAL_CATEGORIES.electronics, context: 'جهاز حراري ثابت؛ يُذكر من حيث السلامة فقط.' },
     { key: 'microwave', nameAr: 'ميكروويف', category: FUNCTIONAL_CATEGORIES.electronics, context: 'جهاز مطبخ ثابت؛ لا يُستخدم في أنشطة الطفل المباشرة.' },

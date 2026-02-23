@@ -1,6 +1,6 @@
 /**
  * Intelligent refinement layer: improves activity quality without changing
- * system structure or adding latency. Applies functional relevance, clinical
+ * system structure or adding latency. Applies functional relevance, therapeutic
  * depth, real-world feasibility, diversity, and humanization.
  */
 
@@ -174,7 +174,7 @@ function enforceDiversityOrder(activities: RefinedActivity[]): RefinedActivity[]
 }
 
 /**
- * Refines the activity list: functional relevance, clinical depth, feasibility,
+ * Refines the activity list: functional relevance, therapeutic depth, feasibility,
  * diversity, and humanization. Does not change length; keeps same count.
  */
 export function refineActivities(
@@ -197,7 +197,7 @@ export function refineActivities(
       if (ageSub !== activity.therapeuticFocus) activity = { ...activity, therapeuticFocus: ageSub };
     }
 
-    // Rule 2: clinical depth — seed for formatter to pick specific observable skill per mode
+    // Rule 2: therapeutic depth — seed for formatter to pick specific observable skill per mode
     activity.specificSkillSeed = index + age + (activity.objectLabel.length % 5);
 
     // Rule 5: humanization — offset for formatter variant spread

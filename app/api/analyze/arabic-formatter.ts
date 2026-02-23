@@ -10,7 +10,7 @@ export interface Activity {
   therapeuticFocus: TherapeuticFocus;
   description: string;
   element?: EnvironmentElement;
-  /** Refinement: seed for picking specific observable skill (clinical depth). */
+  /** Refinement: seed for picking specific observable skill (therapeutic depth). */
   specificSkillSeed?: number;
   /** Refinement: offset for variant spread (humanization). */
   humanizeOffset?: number;
@@ -31,7 +31,7 @@ interface ArabicFormattedActivity {
     ageAdaptations: string;
     successIndicators: string;
     safetyWarnings: string;
-    /** Therapeutic intelligence: مبرر سريري، تقدم مقترح، نصائح بيئية، نتيجة وظيفية، تكيف بيئي */
+    /** Therapeutic intelligence: مبرر علاجي احترافي، تقدم مقترح، نصائح بيئية، نتيجة وظيفية، تكيف بيئي */
     clinicalRationale?: string;
     suggestedProgression?: string;
     environmentalModificationTips?: string;
@@ -374,7 +374,7 @@ const ENCOURAGEMENT = [
   'يمكنك أن تذكّره بالتنفس الهادئ — ',
 ] as const;
 
-/** Parent: short, warm goal framing. Therapist: clinical, precise. */
+/** Parent: short, warm goal framing. Therapist: professional therapeutic, precise. */
 const GOAL_FRAME_PARENT = [
   'لمساعدة طفلك على',
   'يدعم طفلك في',
@@ -397,7 +397,7 @@ const ACTIVITY_NAMES_PARENT: Record<TherapeuticFocus, readonly string[]> = {
   bilateral_coordination: ['اليدان معاً مع', 'تنسيق ثنائي مع', 'يدان متعاونتان مع', 'تعاون اليدين مع'],
 };
 
-/** Activity name variants (therapist) — عناوين سريرية */
+/** Activity name variants (therapist) — عناوين علاجية احترافية */
 const ACTIVITY_NAMES_THERAPIST: Record<TherapeuticFocus, readonly string[]> = {
   sensory_regulation: ['تدخل تنظيم حسي وتكامل حسي باستخدام', 'تدخل معالجة حسية متعددة الأنظمة باستخدام', 'تدخل تنظيم ذاتي وإثارة باستخدام'],
   motor_planning: ['تدخل تخطيط حركي وتسلسل حركي باستخدام', 'تدخل ذاكرة حركية ومرونة حركية باستخدام', 'تدخل تمثيل حركي وتنفيذ باستخدام'],
@@ -447,7 +447,7 @@ const GOAL_VARIANTS_PARENT: Record<TherapeuticFocus, readonly string[]> = {
   ],
 };
 
-/** Therapeutic goal full-sentence variants (therapist) — صيغ سريرية */
+/** Therapeutic goal full-sentence variants (therapist) — صيغ علاجية احترافية */
 const GOAL_VARIANTS_THERAPIST: Record<TherapeuticFocus, readonly string[]> = {
   sensory_regulation: [
     'تحسين معالجة المعلومات الحسية متعددة الأنظمة والتنظيم الذاتي لمستوى الإثارة',

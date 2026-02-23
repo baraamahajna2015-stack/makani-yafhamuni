@@ -277,6 +277,7 @@ export default function Home() {
                         <span className="font-medium text-zinc-800 dark:text-zinc-100">
                           {el.elementNameAr}
                         </span>
+                        {/* Confidence is never displayed; reserved for internal reasoning only. */}
                         {useReasoned && (el as ReasonedElement).functionalCategory && (
                           <>
                             <span className="mx-1.5 text-zinc-500">•</span>
@@ -339,7 +340,7 @@ export default function Home() {
                         {activity.formattedArabic.clinicalRationale && (
                           <div>
                             <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                              المبرر السريري:
+                              المبرر العلاجي الاحترافي:
                             </p>
                             <p className="text-zinc-700 dark:text-zinc-300">
                               {activity.formattedArabic.clinicalRationale}

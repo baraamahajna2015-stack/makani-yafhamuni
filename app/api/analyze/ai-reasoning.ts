@@ -162,28 +162,46 @@ function interpretOne(
     }
   }
 
-  // Generic but professional fallback only for clearly environmental terms
+  // Environment-like terms: derive a specific Arabic name and functionally meaningful context (avoid generic "عنصر من البيئة").
   const envLike = ['furniture', 'furnishing', 'room', 'indoor', 'floor', 'wall', 'table', 'chair', 'seat', 'cushion', 'mat', 'rug', 'carpet', 'shelf', 'desk', 'bed', 'lamp', 'door', 'window'];
   if (envLike.some((w) => n.includes(w))) {
-    const safeName = n.includes('table') ? 'طاولة' : n.includes('chair') || n.includes('seat') ? 'كرسي' : n.includes('floor') || n.includes('mat') ? 'أرضية أو فرش' : n.includes('shelf') ? 'رف' : n.includes('desk') ? 'مكتب' : n.includes('bed') ? 'سرير' : n.includes('lamp') ? 'مصباح' : n.includes('door') ? 'باب' : n.includes('window') ? 'نافذة' : 'عنصر في بيئة الغرفة';
+    const safeName =
+      n.includes('table') ? 'طاولة'
+        : n.includes('chair') || n.includes('seat') ? 'كرسي'
+        : n.includes('floor') || n.includes('mat') ? 'أرضية أو فرش'
+        : n.includes('shelf') ? 'رف'
+        : n.includes('desk') ? 'مكتب'
+        : n.includes('bed') ? 'سرير'
+        : n.includes('lamp') ? 'مصباح'
+        : n.includes('door') ? 'باب'
+        : n.includes('window') ? 'نافذة'
+        : n.includes('furniture') ? 'أثاث'
+        : n.includes('furnishing') ? 'فرش أو أثاث'
+        : n.includes('wall') ? 'جدار'
+        : n.includes('room') ? 'عناصر الغرفة'
+        : n.includes('indoor') ? 'عنصر داخلي'
+        : (() => { const first = (n.split(' ')[0] ?? n).replace(/_/g, ' '); return first ? `عنصر مشابه لـ ${first}` : 'عنصر في بيئة الغرفة'; })();
+    const contextInterpretation =
+      'يمكن دمج العنصر في أنشطة علاجية (جلوس، نقل، لعب، تنظيم) بعد تقييم السلامة والوظيفة والملاءمة العمرية.';
     return {
       rawLabel: className,
       elementNameAr: safeName,
       functionalCategory: FUNCTIONAL_CATEGORIES.dailyUse,
-      contextualInterpretation: 'عنصر موجود في بيئة الغرفة يمكن دمجه في أنشطة مناسبة بعد تقييم السلامة والوظيفة.',
+      contextualInterpretation: contextInterpretation,
       confidenceAfterProcessing: confidence * 0.85,
     };
   }
 
-  // Low relevance or unclear: still return but with lower confidence and neutral category
+  // Low relevance or unclear: return with label-derived name and functionally meaningful context (no generic placeholder).
   if (rel >= 0.5) {
     const firstWord = n.split(' ')[0] ?? n;
     const transliterated = firstWord.replace(/_/g, ' ');
+    const nameAr = transliterated ? `عنصر (${transliterated}) — يُفضّل التأكد من السياق` : 'عنصر — يُفضّل التأكد من السياق';
     return {
       rawLabel: className,
-      elementNameAr: `عنصر (${transliterated}) — يُفضّل التأكد من السياق`,
+      elementNameAr: nameAr,
       functionalCategory: FUNCTIONAL_CATEGORIES.dailyUse,
-      contextualInterpretation: 'تصنيف أولي من الصورة؛ يُنصح بمراعاة السياق الفعلي للغرفة قبل تصميم النشاط.',
+      contextualInterpretation: 'تصنيف أولي من الصورة؛ يُنصح بمراعاة السياق الفعلي للغرفة وملاءمة العمر قبل تصميم النشاط.',
       confidenceAfterProcessing: confidence * 0.6,
     };
   }

@@ -109,6 +109,7 @@ export default function Home() {
         return;
       }
 
+      console.log("API response (full):", data);
       setResult(data);
     } catch (err) {
       setError(ERRORS.serverError);

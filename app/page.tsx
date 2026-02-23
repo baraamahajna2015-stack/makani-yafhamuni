@@ -120,7 +120,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-transparent font-sans" dir="rtl">
-      <main className="w-full max-w-2xl rounded-2xl bg-white/95 p-8 shadow-sm backdrop-blur-sm dark:bg-zinc-950/95">
+      <main className="w-full max-w-2xl rounded-2xl border border-white/40 bg-white/75 p-8 shadow-lg shadow-black/5 backdrop-blur-md dark:border-zinc-600/30 dark:bg-zinc-900/70 dark:shadow-black/10">
         <div className="mb-10 space-y-3">
           <h1 className="bg-gradient-to-r from-[#1e3a5f] via-[#2d5a87] to-[#1a2f4a] bg-clip-text text-4xl font-bold tracking-tight text-transparent dark:from-slate-200 dark:via-slate-100 dark:to-slate-300">
             {HERO.title}

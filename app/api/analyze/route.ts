@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import * as tf from '@tensorflow/tfjs';
 import * as mobilenet from '@tensorflow-models/mobilenet';
 import sharp from 'sharp';
+import { reasonOverDetections, type ReasonedElement } from './ai-reasoning';
 import { formatActivitiesInArabic, type Activity } from './arabic-formatter';
 import { analyzeEnvironment, buildActivitiesFromEnvironment, type EnvironmentElement } from './environment';
 import { refineActivities } from './refinement';
@@ -67,12 +68,16 @@ export async function POST(req: NextRequest) {
 
     const forbiddenKeywords = ['face', 'person', 'people', 'man', 'woman', 'boy', 'girl', 'human'];
 
-    const labels = predictions
-      .map((p) => p.className)
-      .filter((label) => {
-        const lower = label.toLowerCase();
-        return !forbiddenKeywords.some((kw) => lower.includes(kw));
-      });
+    const filteredPredictions = predictions.filter((p) => {
+      const lower = p.className.toLowerCase();
+      return !forbiddenKeywords.some((kw) => lower.includes(kw));
+    });
+    const labels = filteredPredictions.map((p) => p.className);
+
+    const reasonedElements: ReasonedElement[] = reasonOverDetections(
+      filteredPredictions.map((p) => ({ className: p.className, probability: p.probability }))
+    );
+    const labelToNameAr = new Map(reasonedElements.map((r) => [r.rawLabel, r.elementNameAr]));
 
     const elements = analyzeEnvironment(labels);
     enrichElementsWithSafety(elements);
@@ -94,14 +99,18 @@ export async function POST(req: NextRequest) {
       age,
       userMode
     );
+    const labelsArabicWithReasoning = labels.map(
+      (label, i) => labelToNameAr.get(label) ?? labelsArabic[i]
+    );
 
     return NextResponse.json({
       age,
       labels,
-      labelsArabic,
+      labelsArabic: labelsArabicWithReasoning,
       activities,
       activitiesArabic,
       userMode,
+      reasonedElements,
     });
   } catch (err) {
     console.error('Error in /api/analyze:', err);

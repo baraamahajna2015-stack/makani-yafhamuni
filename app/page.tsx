@@ -1,7 +1,13 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { FORM, HERO, SECTIONS, ERRORS, USER_MODE_LABELS } from "./ui-strings";
+
+const LOADING_MESSAGES = [
+  "جاري تحليل عناصر البيئة...",
+  "مطابقة النتائج مع العمر...",
+  "بناء أنشطة مخصصة...",
+] as const;
 
 type TherapeuticFocus = "sensory_regulation" | "motor_planning" | "executive_function" | "fine_motor" | "gross_motor" | "bilateral_coordination";
 
@@ -68,8 +74,20 @@ export default function Home() {
   const [age, setAge] = useState<string>("");
   const [userMode, setUserMode] = useState<"parent" | "therapist">("parent");
   const [loading, setLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ApiResponse | null>(null);
+
+  useEffect(() => {
+    if (!loading) {
+      setLoadingStep(0);
+      return;
+    }
+    const id = setInterval(() => {
+      setLoadingStep((s) => (s + 1) % LOADING_MESSAGES.length);
+    }, 2200);
+    return () => clearInterval(id);
+  }, [loading]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -199,6 +217,17 @@ export default function Home() {
             {loading ? FORM.submitting : FORM.submit}
           </button>
         </form>
+
+        {loading && (
+          <div className="mt-6 rounded-xl border border-white/40 bg-white/60 py-6 px-5 backdrop-blur-sm dark:border-zinc-600/30 dark:bg-zinc-800/50" dir="rtl">
+            <div className="flex items-center gap-3">
+              <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600 dark:border-zinc-600 dark:border-t-zinc-300" aria-hidden />
+              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                {LOADING_MESSAGES[loadingStep]}
+              </p>
+            </div>
+          </div>
+        )}
 
         {error && (
           <p className="mt-4 text-sm text-red-600 dark:text-red-400">{error}</p>

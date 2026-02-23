@@ -121,12 +121,14 @@ export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-transparent font-sans" dir="rtl">
       <main className="w-full max-w-2xl rounded-2xl bg-white/95 p-8 shadow-sm backdrop-blur-sm dark:bg-zinc-950/95">
-        <h1 className="mb-2 text-3xl font-semibold tracking-tight text-black dark:text-zinc-50">
-          {HERO.title}
-        </h1>
-        <p className="mb-8 text-sm text-zinc-600 dark:text-zinc-400">
-          {HERO.subtitle}
-        </p>
+        <div className="mb-10 space-y-3">
+          <h1 className="bg-gradient-to-r from-[#1e3a5f] via-[#2d5a87] to-[#1a2f4a] bg-clip-text text-4xl font-bold tracking-tight text-transparent dark:from-slate-200 dark:via-slate-100 dark:to-slate-300">
+            {HERO.title}
+          </h1>
+          <p className="max-w-lg text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+            {HERO.subtitle}
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

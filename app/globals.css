@@ -38,40 +38,47 @@ body {
   min-height: 100vh;
 }
 
-/* Hero contextual background: image + soft overlay + subtle analysis lines (decorative only) */
+/* Hero background: image and overlay on main wrapper (image from /public) */
+.page-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  background-image: url('/hero-bg.jpg'), url('/hero-bg.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(5px);
+  transform: scale(1.03);
+}
+
+.page-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.78);
+}
+
 .hero-bg {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: 2;
   overflow: hidden;
-}
-
-.hero-bg__image {
-  position: absolute;
-  inset: -20px;
-  background-color: var(--background-solid);
-  background-image: url('/hero-bg.jpg');
-  background-size: cover;
-  background-position: center;
-  filter: blur(6px);
-  transform: scale(1.04);
-}
-
-.hero-bg__overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.76);
+  pointer-events: none;
 }
 
 .hero-bg__lines {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   opacity: 0.12;
 }
 
 @media (prefers-color-scheme: dark) {
-  .hero-bg__overlay {
+  .page-wrapper::after {
     background: rgba(15, 18, 24, 0.82);
   }
   .hero-bg__lines {

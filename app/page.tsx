@@ -137,10 +137,8 @@ export default function Home() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-transparent font-sans" dir="rtl">
+    <div className="page-wrapper relative flex min-h-screen items-center justify-center bg-transparent font-sans" dir="rtl">
       <div className="hero-bg" aria-hidden="true" role="presentation">
-        <div className="hero-bg__image" />
-        <div className="hero-bg__overlay" />
         <svg className="hero-bg__lines" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
           <rect x="18%" y="22%" width="22%" height="28%" stroke="currentColor" strokeWidth="0.5" strokeOpacity="0.4" fill="none" />
           <rect x="58%" y="32%" width="20%" height="24%" stroke="currentColor" strokeWidth="0.5" strokeOpacity="0.35" fill="none" />

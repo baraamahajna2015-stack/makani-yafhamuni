@@ -234,9 +234,9 @@ export default function Home() {
         )}
 
         {result && !("error" in result) && (
-          <section className="mt-10 space-y-8 animate-result-enter">
+          <section className="mt-10 space-y-12 animate-result-enter">
             <div>
-              <h2 className="text-lg font-semibold tracking-tight text-[#1e3a5f] dark:text-slate-300">
+              <h2 className="text-xl font-semibold leading-snug tracking-tight text-[#1a2f4a] dark:text-[#94a8c4]">
                 {SECTIONS.detectedObjects}
               </h2>
               {(() => {
@@ -253,13 +253,13 @@ export default function Home() {
                 const isEmpty = elements.length === 0;
                 if (isEmpty) {
                   return (
-                    <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                    <p className="mt-2 text-sm leading-loose text-zinc-600 dark:text-zinc-400">
                       {SECTIONS.noObjectsDetected}
                     </p>
                   );
                 }
                 return (
-                  <ul className="mt-2 space-y-2 text-sm leading-relaxed">
+                  <ul className="mt-2 space-y-2 text-sm leading-loose">
                     {elements.map((el, index) => (
                       <li
                         key={
@@ -290,10 +290,10 @@ export default function Home() {
 
             {result.activitiesArabic.length > 0 && (
               <div>
-                <h2 className="text-lg font-semibold tracking-tight text-[#1e3a5f] dark:text-slate-300">
+                <h2 className="text-xl font-semibold leading-snug tracking-tight text-[#1a2f4a] dark:text-[#94a8c4]">
                   {SECTIONS.suggestedActivities}
                 </h2>
-                <ul className="mt-4 space-y-8 text-zinc-800 dark:text-zinc-100">
+                <ul className="mt-5 space-y-10 text-zinc-800 dark:text-zinc-100">
                   {result.activitiesArabic.map((activity, index) => (
                     <li
                       key={`${activity.objectLabel}-${activity.therapeuticFocus}-${index}`}
@@ -304,7 +304,7 @@ export default function Home() {
                       <p className="mb-5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                         {activity.therapeuticFocusArabic} • {activity.objectLabelArabic}
                       </p>
-                      <div className="space-y-5 text-sm leading-relaxed">
+                      <div className="space-y-5 text-sm leading-loose">
                         <div>
                           <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                             1. اسم النشاط:

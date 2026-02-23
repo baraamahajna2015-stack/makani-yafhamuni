@@ -93,6 +93,24 @@ const SUGGESTED_DURATION: Record<TherapeuticFocus, { parent: string; therapist: 
   bilateral_coordination: { parent: 'أربع إلى ست دقائق', therapist: '٦–١٠ دقائق' },
 };
 
+/** Age-scaled duration: shorter for younger children, clearer alignment to developmental level. */
+function getSuggestedDurationForAge(focus: TherapeuticFocus, userMode: UserMode, age: number): string {
+  const base = SUGGESTED_DURATION[focus][userMode];
+  if (age < 4) {
+    const short: Record<TherapeuticFocus, string> = {
+      sensory_regulation: userMode === 'parent' ? 'دقيقتان إلى أربع دقائق' : '٣–٥ دقائق',
+      motor_planning: userMode === 'parent' ? 'دقيقتان إلى أربع دقائق' : '٤–٦ دقائق',
+      executive_function: userMode === 'parent' ? 'ثلاث إلى خمس دقائق' : '٥–٨ دقائق',
+      fine_motor: userMode === 'parent' ? 'دقيقتان إلى أربع دقائق' : '٤–٦ دقائق',
+      gross_motor: userMode === 'parent' ? 'ثلاث إلى خمس دقائق' : '٥–٨ دقائق',
+      bilateral_coordination: userMode === 'parent' ? 'دقيقتان إلى أربع دقائق' : '٤–٦ دقائق',
+    };
+    return short[focus];
+  }
+  if (age < 7) return base;
+  return base;
+}
+
 /** Pick a variant by seed (stable per activity). Ensures variation across activities. */
 function pickVariant<T>(options: readonly T[], seed: number): T {
   return options[Math.abs(seed) % options.length];
@@ -632,7 +650,7 @@ function formatActivityInArabic(
   const targetSkill = activity.specificSkillSeed != null
     ? getSpecificSkillDefault(activity.therapeuticFocus, userMode, skillSeed)
     : TARGET_SKILL[activity.therapeuticFocus][userMode];
-  const suggestedDuration = SUGGESTED_DURATION[activity.therapeuticFocus][userMode];
+  const suggestedDuration = getSuggestedDurationForAge(activity.therapeuticFocus, userMode, age);
 
   const reasoning = getTherapeuticReasoning(activity, userMode, variantSeed, objectLabelArabic);
 
@@ -1089,6 +1107,9 @@ function formatActivityInArabic(
     safetyWarnings = [safetyWarnings, activity.element.risks.join('؛ ')].filter(Boolean).join('؛ ');
   }
 
+  const ageAlignmentSuffix = 'النشاط معدّل للفئة العمرية المُدخلة.';
+  const finalAgeAdaptations = ageAdaptations ? `${ageAdaptations} ${ageAlignmentSuffix}` : ageAlignmentSuffix;
+
   return {
     activityName,
     therapeuticGoal,
@@ -1096,7 +1117,7 @@ function formatActivityInArabic(
     toolsUsed,
     implementationSteps,
     suggestedDuration,
-    ageAdaptations,
+    ageAdaptations: finalAgeAdaptations,
     successIndicators,
     safetyWarnings,
     clinicalRationale: reasoning.clinicalRationale,

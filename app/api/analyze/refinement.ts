@@ -118,6 +118,10 @@ const DEMAND: Record<TherapeuticFocus, 'static' | 'dynamic' | 'bilateral' | 'seq
 /** Feasibility: focuses that need more space (rule 3). */
 const NEEDS_SPACE: TherapeuticFocus[] = ['gross_motor', 'motor_planning'];
 
+/** Age alignment: for very young children, prefer focuses with lower cognitive/motor-planning demand (rule 6). */
+const PREFERRED_FOR_UNDER_4: TherapeuticFocus[] = ['sensory_regulation', 'fine_motor', 'gross_motor', 'bilateral_coordination'];
+const LESS_SUITABLE_UNDER_4: TherapeuticFocus[] = ['executive_function', 'motor_planning'];
+
 function isFeasibleInSpace(a: ActivityCandidate): boolean {
   const el = a.element;
   if (!el) return true;
@@ -185,7 +189,12 @@ export function refineActivities(
     let activity: RefinedActivity = { ...a };
     if (!isFeasibleInSpace(a)) {
       const sub = substituteFocusForSpace(a);
-      if (sub !== a.therapeuticFocus) activity = { ...a, therapeuticFocus: sub };
+      if (sub !== a.therapeuticFocus) activity = { ...activity, therapeuticFocus: sub };
+    }
+    // Rule 6: age alignment — for very young (under 4), prefer developmentally appropriate focus when element allows
+    if (age < 4 && LESS_SUITABLE_UNDER_4.includes(activity.therapeuticFocus)) {
+      const ageSub = substituteFocusForAge(activity);
+      if (ageSub !== activity.therapeuticFocus) activity = { ...activity, therapeuticFocus: ageSub };
     }
 
     // Rule 2: clinical depth — seed for formatter to pick specific observable skill per mode
@@ -209,6 +218,14 @@ function substituteFocusForSpace(a: ActivityCandidate): TherapeuticFocus {
   const allowed = el?.motor?.length ? el.motor : (['fine_motor', 'sensory_regulation', 'executive_function'] as TherapeuticFocus[]);
   const prefers = allowed.filter((f) => !NEEDS_SPACE.includes(f));
   return (prefers[0] ?? allowed[0] ?? a.therapeuticFocus) as TherapeuticFocus;
+}
+
+/** When age is under 4, prefer a focus that is developmentally appropriate (lower cognitive/motor-planning demand). */
+function substituteFocusForAge(a: ActivityCandidate): TherapeuticFocus {
+  const el = a.element;
+  const allowed = el?.motor?.length ? el.motor : (['sensory_regulation', 'fine_motor', 'gross_motor'] as TherapeuticFocus[]);
+  const preferred = allowed.filter((f) => PREFERRED_FOR_UNDER_4.includes(f));
+  return (preferred[0] ?? allowed[0] ?? a.therapeuticFocus) as TherapeuticFocus;
 }
 
 /** Expose for formatter: get specific skill text by focus and mode (used when activity has no override). */

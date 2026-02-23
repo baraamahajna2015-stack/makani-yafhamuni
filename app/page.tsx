@@ -119,8 +119,8 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black" dir="rtl">
-      <main className="w-full max-w-2xl rounded-2xl bg-white p-8 shadow-sm dark:bg-zinc-950">
+    <div className="flex min-h-screen items-center justify-center bg-transparent font-sans" dir="rtl">
+      <main className="w-full max-w-2xl rounded-2xl bg-white/95 p-8 shadow-sm backdrop-blur-sm dark:bg-zinc-950/95">
         <h1 className="mb-2 text-3xl font-semibold tracking-tight text-black dark:text-zinc-50">
           {HERO.title}
         </h1>

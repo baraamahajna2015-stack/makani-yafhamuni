@@ -60,7 +60,8 @@ export default function UploadPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#f5f5f5',
+        background: 'linear-gradient(180deg, #ffffff 0%, #f4faf4 100%)',
+        backgroundAttachment: 'fixed',
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
       }}
     >
@@ -70,8 +71,8 @@ export default function UploadPage() {
           maxWidth: 400,
           padding: 24,
           borderRadius: 8,
-          background: '#ffffff',
-          boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+          background: 'rgba(255, 255, 255, 0.95)',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
         }}
       >
         <h1 style={{ fontSize: 20, marginBottom: 16 }}>{UPLOAD_PAGE.title}</h1>

@@ -137,8 +137,19 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-transparent font-sans" dir="rtl">
-      <main className="w-full max-w-2xl rounded-2xl border border-white/40 bg-white/75 p-8 shadow-lg shadow-black/5 backdrop-blur-md dark:border-zinc-600/30 dark:bg-zinc-900/70 dark:shadow-black/10">
+    <div className="relative flex min-h-screen items-center justify-center bg-transparent font-sans" dir="rtl">
+      <div className="hero-bg" aria-hidden="true" role="presentation">
+        <div className="hero-bg__image" />
+        <div className="hero-bg__overlay" />
+        <svg className="hero-bg__lines" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <rect x="18%" y="22%" width="22%" height="28%" stroke="currentColor" strokeWidth="0.5" strokeOpacity="0.4" fill="none" />
+          <rect x="58%" y="32%" width="20%" height="24%" stroke="currentColor" strokeWidth="0.5" strokeOpacity="0.35" fill="none" />
+          <rect x="32%" y="58%" width="26%" height="22%" stroke="currentColor" strokeWidth="0.5" strokeOpacity="0.3" fill="none" />
+          <line x1="28%" y1="38%" x2="38%" y2="38%" stroke="currentColor" strokeWidth="0.4" strokeOpacity="0.25" />
+          <line x1="62%" y1="48%" x2="72%" y2="48%" stroke="currentColor" strokeWidth="0.4" strokeOpacity="0.2" />
+        </svg>
+      </div>
+      <main className="relative z-10 w-full max-w-2xl rounded-2xl border border-white/40 bg-white/75 p-8 shadow-lg shadow-black/5 backdrop-blur-md dark:border-zinc-600/30 dark:bg-zinc-900/70 dark:shadow-black/10">
         <div className="mb-10 space-y-3">
           <h1 className="bg-gradient-to-r from-[#1e3a5f] via-[#2d5a87] to-[#1a2f4a] bg-clip-text text-4xl font-bold tracking-tight text-transparent dark:from-slate-200 dark:via-slate-100 dark:to-slate-300">
             {HERO.title}

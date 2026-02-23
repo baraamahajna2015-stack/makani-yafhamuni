@@ -38,6 +38,47 @@ body {
   min-height: 100vh;
 }
 
+/* Hero contextual background: image + soft overlay + subtle analysis lines (decorative only) */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero-bg__image {
+  position: absolute;
+  inset: -20px;
+  background-color: var(--background-solid);
+  background-image: url('/hero-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: blur(6px);
+  transform: scale(1.04);
+}
+
+.hero-bg__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.hero-bg__lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+}
+
+@media (prefers-color-scheme: dark) {
+  .hero-bg__overlay {
+    background: rgba(15, 18, 24, 0.82);
+  }
+  .hero-bg__lines {
+    opacity: 0.08;
+  }
+}
+
 @keyframes result-enter {
   from {
     opacity: 0;

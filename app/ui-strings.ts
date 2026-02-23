@@ -14,41 +14,45 @@ export const USER_MODE_LABELS: Record<UserMode, string> = {
 /** Form labels */
 export const FORM = {
   image: "صورة",
+  imageAria: "اختيار ملف الصورة",
   childAgeYears: "عمر الطفل (بالسنوات)",
+  ageAria: "إدخال عمر الطفل بالسنوات",
   userMode: "وضع الاستخدام",
   agePlaceholder: "مثال: ٥",
   submit: "إنشاء الأنشطة",
+  submitAria: "تنفيذ التحليل وإنشاء الأنشطة",
   submitting: "جاري التحليل...",
+  loadingAria: "جاري تحليل الصورة وإنشاء الأنشطة",
 } as const;
 
 /** Hero / intro */
 export const HERO = {
   title: "مكاني يفهمني",
   subtitle:
-    "ارفع صورة لبيئة طفلك وأدخل عمره. تُعالج الصورة في الذاكرة فقط ولا تُستخدم وجوه أو أشخاص.",
+    "ارفع صورة لبيئة الطفل وأدخل عمره. المعالجة تتم محلياً ولا تشمل وجوهاً أو أشخاصاً.",
 } as const;
 
 /** Section headings */
 export const SECTIONS = {
-  detectedObjects: "العناصر المكتشفة",
-  noObjectsDetected: "لم يُكتشف عناصر غير بشرية. جرّب صورة أخرى.",
-  suggestedActivities: "الأنشطة المقترحة",
+  detectedObjects: "عناصر البيئة المُستخرجة",
+  noObjectsDetected: "لم يُعثر على عناصر غير بشرية في الصورة. يُفضّل تجربة صورة أخرى.",
+  suggestedActivities: "الأنشطة العلاجية المقترحة",
 } as const;
 
 /** AI Insight box (below generated activities) */
 export const INSIGHT = {
   title: "ملاحظة تحليلية",
   summary:
-    "تمت صياغة الأنشطة أعلاه بناءً على عناصر البيئة المكتشفة وتناسبها مع عمر الطفل لتحقيق أهداف علاجية واضحة.",
+    "صياغة الأنشطة أعلاه مبنية على عناصر البيئة المُستخرجة وملاءمتها لعمر الطفل، وفق أهداف علاجية محددة.",
 } as const;
 
 /** Error messages */
 export const ERRORS = {
-  selectImage: "الرجاء اختيار صورة.",
-  validAge: "الرجاء إدخال عمر صحيح.",
-  somethingWrong: "حدث خطأ ما.",
+  selectImage: "يُرجى اختيار صورة.",
+  validAge: "يُرجى إدخال عمر صحيح.",
+  somethingWrong: "حدث خطأ غير متوقع.",
   serverError: "تعذّر الاتصال بالخادم.",
-  tryAgain: "حدث خطأ. الرجاء المحاولة مرة أخرى.",
+  tryAgain: "حدث خطأ. يُرجى المحاولة مرة أخرى.",
 } as const;
 
 /** Upload page (if used) */

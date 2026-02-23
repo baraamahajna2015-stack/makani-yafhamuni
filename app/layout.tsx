@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "مكاني يفهمني",
-  description: "مساعد علاجي يخطط أنشطة مبنية على بيئة الطفل — مكاني يفهمني يساعد الأهل والمعالجين في تصميم أنشطة وظيفية مناسبة لعمر الطفل وبيئته.",
+  description: "أداة لتحليل بيئة الطفل وتوليد أنشطة علاجية مبنية على العناصر المُستخرجة وملاءمة العمر. للأهل والمعالجين.",
 };
 
 export default function RootLayout({

@@ -156,6 +156,7 @@ export default function Home() {
             <input
               type="file"
               accept="image/*"
+              aria-label={FORM.imageAria}
               onChange={(e) => {
                 const file = e.target.files?.[0] ?? null;
                 setImageFile(file);
@@ -173,6 +174,7 @@ export default function Home() {
               min={1}
               max={12}
               value={age}
+              aria-label={FORM.ageAria}
               onChange={(e) => setAge(e.target.value)}
               className="mt-1 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none ring-0 transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:border-zinc-600 dark:focus:ring-zinc-800"
               placeholder={FORM.agePlaceholder}
@@ -212,6 +214,7 @@ export default function Home() {
           <button
             type="submit"
             disabled={loading}
+            aria-label={FORM.submitAria}
             className="inline-flex h-11 items-center justify-center rounded-md bg-zinc-900 px-6 text-sm font-medium text-white shadow-md transition-all duration-200 ease-out hover:bg-zinc-800 hover:shadow-lg hover:scale-[1.02] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-zinc-500 disabled:shadow-md disabled:scale-100 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200 dark:hover:shadow-lg"
           >
             {loading ? FORM.submitting : FORM.submit}
@@ -219,7 +222,7 @@ export default function Home() {
         </form>
 
         {loading && (
-          <div className="mt-6 rounded-xl border border-white/40 bg-white/60 py-6 px-5 backdrop-blur-sm dark:border-zinc-600/30 dark:bg-zinc-800/50" dir="rtl">
+          <div className="mt-6 rounded-xl border border-white/40 bg-white/60 py-6 px-5 backdrop-blur-sm dark:border-zinc-600/30 dark:bg-zinc-800/50" role="status" aria-label={FORM.loadingAria} dir="rtl">
             <div className="flex items-center gap-3">
               <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600 dark:border-zinc-600 dark:border-t-zinc-300" aria-hidden />
               <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
@@ -300,7 +303,7 @@ export default function Home() {
                     <li
                       key={`${activity.objectLabel}-${activity.therapeuticFocus}-${index}`}
                       className="animate-result-enter rounded-xl border border-slate-200 bg-white p-6 opacity-0 shadow-sm dark:border-slate-700 dark:bg-slate-900/50"
-                      style={{ animationDelay: `${index * 90}ms` }}
+                      style={{ animationDelay: `${index * 70}ms` }}
                       dir="rtl"
                     >
                       <p className="mb-5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
@@ -435,7 +438,7 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <div className="mt-10 animate-result-enter rounded-xl border border-zinc-200/80 bg-zinc-50/80 px-5 py-4 opacity-0 shadow-sm backdrop-blur-sm dark:border-zinc-700/60 dark:bg-zinc-800/50" style={{ animationDelay: `${(result.activitiesArabic?.length ?? 0) * 90}ms` }} dir="rtl">
+                <div className="mt-10 animate-result-enter rounded-xl border border-zinc-200/80 bg-zinc-50/80 px-5 py-4 opacity-0 shadow-sm backdrop-blur-sm dark:border-zinc-700/60 dark:bg-zinc-800/50" style={{ animationDelay: `${(result.activitiesArabic?.length ?? 0) * 70}ms` }} dir="rtl">
                   <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#1a2f4a] dark:text-[#94a8c4]">
                     {INSIGHT.title}
                   </p>

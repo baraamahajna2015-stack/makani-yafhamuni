@@ -43,5 +43,5 @@ body {
 }
 
 .animate-result-enter {
-  animation: result-enter 0.4s ease-out forwards;
+  animation: result-enter 0.3s ease-out forwards;
 }

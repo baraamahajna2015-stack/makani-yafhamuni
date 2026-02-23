@@ -203,9 +203,9 @@ export default function Home() {
         )}
 
         {result && !("error" in result) && (
-          <section className="mt-8 space-y-4">
+          <section className="mt-10 space-y-8">
             <div>
-              <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+              <h2 className="text-lg font-semibold tracking-tight text-[#1e3a5f] dark:text-slate-300">
                 {SECTIONS.detectedObjects}
               </h2>
               {(() => {
@@ -222,13 +222,13 @@ export default function Home() {
                 const isEmpty = elements.length === 0;
                 if (isEmpty) {
                   return (
-                    <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                    <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                       {SECTIONS.noObjectsDetected}
                     </p>
                   );
                 }
                 return (
-                  <ul className="mt-1 space-y-2 text-sm">
+                  <ul className="mt-2 space-y-2 text-sm leading-relaxed">
                     {elements.map((el, index) => (
                       <li
                         key={
@@ -259,30 +259,30 @@ export default function Home() {
 
             {result.activitiesArabic.length > 0 && (
               <div>
-                <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+                <h2 className="text-lg font-semibold tracking-tight text-[#1e3a5f] dark:text-slate-300">
                   {SECTIONS.suggestedActivities}
                 </h2>
-                <ul className="mt-2 space-y-6 text-sm text-zinc-800 dark:text-zinc-100">
+                <ul className="mt-4 space-y-8 text-zinc-800 dark:text-zinc-100">
                   {result.activitiesArabic.map((activity, index) => (
                     <li
                       key={`${activity.objectLabel}-${activity.therapeuticFocus}-${index}`}
-                      className="rounded-lg border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-950"
+                      className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/50"
                       dir="rtl"
                     >
-                      <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-4">
+                      <p className="mb-5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                         {activity.therapeuticFocusArabic} • {activity.objectLabelArabic}
                       </p>
-                      <div className="space-y-4 text-sm">
+                      <div className="space-y-5 text-sm leading-relaxed">
                         <div>
-                          <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                          <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                             1. اسم النشاط:
                           </p>
-                          <p className="text-zinc-700 dark:text-zinc-300">
+                          <p className="text-base font-bold leading-snug text-zinc-900 dark:text-zinc-50">
                             {activity.formattedArabic.activityName}
                           </p>
                         </div>
                         <div>
-                          <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                          <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                             2. الهدف العلاجي:
                           </p>
                           <p className="text-zinc-700 dark:text-zinc-300">
@@ -291,7 +291,7 @@ export default function Home() {
                         </div>
                         {activity.formattedArabic.targetSkill && (
                           <div>
-                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                            <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                               المهارة المستهدفة:
                             </p>
                             <p className="text-zinc-700 dark:text-zinc-300">
@@ -301,7 +301,7 @@ export default function Home() {
                         )}
                         {activity.formattedArabic.clinicalRationale && (
                           <div>
-                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                            <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                               المبرر السريري:
                             </p>
                             <p className="text-zinc-700 dark:text-zinc-300">
@@ -311,7 +311,7 @@ export default function Home() {
                         )}
                         {activity.formattedArabic.functionalOutcome && (
                           <div>
-                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                            <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                               النتيجة الوظيفية:
                             </p>
                             <p className="text-zinc-700 dark:text-zinc-300">
@@ -321,7 +321,7 @@ export default function Home() {
                         )}
                         {activity.formattedArabic.environmentalAdaptation && (
                           <div>
-                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                            <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                               التكيف البيئي:
                             </p>
                             <p className="text-zinc-700 dark:text-zinc-300">
@@ -330,10 +330,10 @@ export default function Home() {
                           </div>
                         )}
                         <div>
-                          <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-2">
+                          <p className="mb-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                             3. طريقة التنفيذ:
                           </p>
-                          <ol className="list-decimal list-inside space-y-2 text-zinc-700 dark:text-zinc-300 pr-4">
+                          <ol className="list-decimal list-inside space-y-2 pr-4 text-zinc-700 dark:text-zinc-300">
                             {activity.formattedArabic.implementationSteps.map((step, stepIndex) => (
                               <li key={stepIndex} className="mb-2">
                                 {step}
@@ -342,7 +342,7 @@ export default function Home() {
                           </ol>
                         </div>
                         <div>
-                          <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                          <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                             4. تعديل حسب العمر:
                           </p>
                           <p className="text-zinc-700 dark:text-zinc-300">
@@ -350,7 +350,7 @@ export default function Home() {
                           </p>
                         </div>
                         <div>
-                          <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                          <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                             5. مؤشرات نجاح:
                           </p>
                           <p className="text-zinc-700 dark:text-zinc-300">
@@ -359,7 +359,7 @@ export default function Home() {
                         </div>
                         {activity.formattedArabic.suggestedDuration && (
                           <div>
-                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                            <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                               المدة المقترحة:
                             </p>
                             <p className="text-zinc-700 dark:text-zinc-300">
@@ -369,7 +369,7 @@ export default function Home() {
                         )}
                         {activity.formattedArabic.suggestedProgression && (
                           <div>
-                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                            <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                               التقدم المقترح (ترقية/تخفيض):
                             </p>
                             <p className="text-zinc-700 dark:text-zinc-300">
@@ -379,7 +379,7 @@ export default function Home() {
                         )}
                         {activity.formattedArabic.environmentalModificationTips && (
                           <div>
-                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                            <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                               نصائح تعديل البيئة:
                             </p>
                             <p className="text-zinc-700 dark:text-zinc-300">
@@ -389,7 +389,7 @@ export default function Home() {
                         )}
                         {activity.formattedArabic.safetyWarnings && (
                           <div>
-                            <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                            <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                               تحذيرات أمان:
                             </p>
                             <p className="text-zinc-700 dark:text-zinc-300">

@@ -192,7 +192,7 @@ export default function Home() {
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex h-10 items-center justify-center rounded-md bg-zinc-900 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-500 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200"
+            className="inline-flex h-11 items-center justify-center rounded-md bg-zinc-900 px-6 text-sm font-medium text-white shadow-md transition-all duration-200 ease-out hover:bg-zinc-800 hover:shadow-lg hover:scale-[1.02] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-zinc-500 disabled:shadow-md disabled:scale-100 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200 dark:hover:shadow-lg"
           >
             {loading ? FORM.submitting : FORM.submit}
           </button>

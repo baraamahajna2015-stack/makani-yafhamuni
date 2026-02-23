@@ -234,7 +234,7 @@ export default function Home() {
         )}
 
         {result && !("error" in result) && (
-          <section className="mt-10 space-y-8">
+          <section className="mt-10 space-y-8 animate-result-enter">
             <div>
               <h2 className="text-lg font-semibold tracking-tight text-[#1e3a5f] dark:text-slate-300">
                 {SECTIONS.detectedObjects}
@@ -297,7 +297,8 @@ export default function Home() {
                   {result.activitiesArabic.map((activity, index) => (
                     <li
                       key={`${activity.objectLabel}-${activity.therapeuticFocus}-${index}`}
-                      className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/50"
+                      className="animate-result-enter rounded-xl border border-slate-200 bg-white p-6 opacity-0 shadow-sm dark:border-slate-700 dark:bg-slate-900/50"
+                      style={{ animationDelay: `${index * 90}ms` }}
                       dir="rtl"
                     >
                       <p className="mb-5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">

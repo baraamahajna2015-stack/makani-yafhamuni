@@ -235,6 +235,7 @@ export default function Home() {
 
         {result && !("error" in result) && (
           <section className="mt-10 space-y-12 animate-result-enter">
+            <div className="mb-8 h-px w-full shrink-0 bg-gradient-to-r from-transparent via-zinc-200 to-transparent dark:via-zinc-700" aria-hidden="true" />
             <div>
               <h2 className="text-xl font-semibold leading-snug tracking-tight text-[#1a2f4a] dark:text-[#94a8c4]">
                 {SECTIONS.detectedObjects}
@@ -290,6 +291,7 @@ export default function Home() {
 
             {result.activitiesArabic.length > 0 && (
               <div>
+                <div className="mb-8 h-px w-full shrink-0 bg-gradient-to-r from-transparent via-zinc-200 to-transparent dark:via-zinc-700" aria-hidden="true" />
                 <h2 className="text-xl font-semibold leading-snug tracking-tight text-[#1a2f4a] dark:text-[#94a8c4]">
                   {SECTIONS.suggestedActivities}
                 </h2>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, type FormEvent } from "react";
 import { FORM, HERO, SECTIONS, ERRORS, USER_MODE_LABELS, INSIGHT } from "./ui-strings";
+import { ensureArabicDisplayName } from "./arabic-safeguard";
 
 const LOADING_MESSAGES = [
   "جاري تحليل عناصر البيئة...",
@@ -284,7 +285,7 @@ export default function Home() {
                         dir="rtl"
                       >
                         <span className="font-medium text-zinc-800 dark:text-zinc-100">
-                          {el.elementNameAr}
+                          {ensureArabicDisplayName(el.elementNameAr)}
                         </span>
                         {/* Confidence is never displayed; reserved for internal reasoning only. */}
                         {useReasoned && (el as ReasonedElement).functionalCategory && (
@@ -317,7 +318,7 @@ export default function Home() {
                       dir="rtl"
                     >
                       <p className="mb-5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                        {activity.therapeuticFocusArabic} • {activity.objectLabelArabic}
+                        {activity.therapeuticFocusArabic} • {ensureArabicDisplayName(activity.objectLabelArabic)}
                       </p>
                       <div className="space-y-5 text-sm leading-loose">
                         <div>

@@ -374,6 +374,37 @@ const ENCOURAGEMENT = [
   'يمكنك أن تذكّره بالتنفس الهادئ — ',
 ] as const;
 
+/** Format types for diversity: حركي، تحدٍّ معرفي، لعب إبداعي، مهمة تعاونية — يغيّر صياغة التقديم دون تغيير المحتوى العلاجي */
+const FORMAT_TYPE_LABELS = [
+  'نشاط حركي منظم',
+  'تحدٍّ معرفي وحركي',
+  'لعب هادف وإبداعي',
+  'مهمة تعاونية موجّهة',
+] as const;
+
+/** Step transitions — تنويع الربط بين الخطوات لتجنّب التكرار */
+const STEP_TRANSITION = [
+  { next: 'ثمّ ', after: '؛ بعد ذلك ' },
+  { next: 'الخطوة التالية: ', after: '؛ عند الانتهاء ' },
+  { next: 'بعد ذلك ', after: '؛ ثمّ ينتقل إلى ' },
+  { next: 'يلي ذلك ', after: '؛ في المرحلة التالية ' },
+  { next: 'ثمّ ', after: '؛ يتوقّف قليلاً ثمّ ' },
+] as const;
+
+/** Age-band phrasing: simpler for young, richer for older — لغة وعبارات حسب العمر */
+const AGE_BAND_OPENERS = {
+  young: ['ابدأ بـ', 'أولاً ', 'ثمّ ', 'أخيراً '],
+  mid: ['في البداية ', 'ثمّ ', 'بعد ذلك ', 'في الختام '],
+  older: ['المرحلة الأولى: ', 'المرحلة الثانية: ', 'المرحلة الثالثة: ', 'المرحلة الأخيرة: '],
+} as const;
+
+/** Age alignment suffix variants — تجنّب عبارة واحدة متكررة */
+const AGE_ALIGNMENT_SUFFIX = [
+  'النشاط معدّل للفئة العمرية المُدخلة.',
+  'تمّ ضبط الصعوبة والطول حسب عمر الطفل.',
+  'المحتوى والخطوات مناسبان للعمر المُدخل.',
+] as const;
+
 /** Parent: short, warm goal framing. Therapist: professional therapeutic, precise. */
 const GOAL_FRAME_PARENT = [
   'لمساعدة طفلك على',
@@ -387,24 +418,24 @@ const GOAL_FRAME_THERAPIST = [
   'تنمية',
 ] as const;
 
-/** Activity name variants (parent) — عناوين متنوعة، لغة بسيطة وداعمة */
+/** Activity name variants (parent) — عناوين متنوعة، لغة بسيطة وداعمة، تجنّب التكرار */
 const ACTIVITY_NAMES_PARENT: Record<TherapeuticFocus, readonly string[]> = {
-  sensory_regulation: ['تهدئة الحواس مع', 'تنظيم حسي مع', 'استكشاف هادئ لـ', 'هدوء وحواس مع'],
-  motor_planning: ['التفكير ثم التنفيذ مع', 'تخطيط ثم حركة مع', 'خطة قبل خطوة مع', 'تفكير ثم حركة مع'],
-  executive_function: ['ترتيب وخطة مع', 'تسلسل ومنفذ مع', 'تنظيم وتنفيذ مع', 'خطة وترتيب مع'],
-  fine_motor: ['اليد والأصابع مع', 'حركة دقيقة مع', 'تحكم يدوي مع', 'أصابع وتركيز مع'],
-  gross_motor: ['حركة الجسم والتوازن مع', 'توازن وحركة مع', 'جسم متوازن مع', 'مشي وتوازن مع'],
-  bilateral_coordination: ['اليدان معاً مع', 'تنسيق ثنائي مع', 'يدان متعاونتان مع', 'تعاون اليدين مع'],
+  sensory_regulation: ['تهدئة الحواس مع', 'تنظيم حسي مع', 'استكشاف هادئ لـ', 'هدوء وحواس مع', 'لحظة تركيز مع', 'استكشاف لمسي وبصري لـ'],
+  motor_planning: ['التفكير ثم التنفيذ مع', 'تخطيط ثم حركة مع', 'خطة قبل خطوة مع', 'تفكير ثم حركة مع', 'مسار وخطة مع', 'تنفيذ متسلسل مع'],
+  executive_function: ['ترتيب وخطة مع', 'تسلسل ومنفذ مع', 'تنظيم وتنفيذ مع', 'خطة وترتيب مع', 'ترتيب ذهني مع', 'تنفيذ مراقَب مع'],
+  fine_motor: ['اليد والأصابع مع', 'حركة دقيقة مع', 'تحكم يدوي مع', 'أصابع وتركيز مع', 'قبضة وتنسيق مع', 'تركيز يدوي مع'],
+  gross_motor: ['حركة الجسم والتوازن مع', 'توازن وحركة مع', 'جسم متوازن مع', 'مشي وتوازن مع', 'تنقل وتوازن مع', 'حركة آمنة مع'],
+  bilateral_coordination: ['اليدان معاً مع', 'تنسيق ثنائي مع', 'يدان متعاونتان مع', 'تعاون اليدين مع', 'ثبات وتنفيذ مع', 'تعاون يدوي مع'],
 };
 
-/** Activity name variants (therapist) — عناوين علاجية احترافية */
+/** Activity name variants (therapist) — عناوين علاجية احترافية متنوّعة */
 const ACTIVITY_NAMES_THERAPIST: Record<TherapeuticFocus, readonly string[]> = {
-  sensory_regulation: ['تدخل تنظيم حسي وتكامل حسي باستخدام', 'تدخل معالجة حسية متعددة الأنظمة باستخدام', 'تدخل تنظيم ذاتي وإثارة باستخدام'],
-  motor_planning: ['تدخل تخطيط حركي وتسلسل حركي باستخدام', 'تدخل ذاكرة حركية ومرونة حركية باستخدام', 'تدخل تمثيل حركي وتنفيذ باستخدام'],
-  executive_function: ['تدخل مهارات تنفيذية ووظائف معرفية باستخدام', 'تدخل تخطيط وتنظيم وكبح اندفاع باستخدام', 'تدخل ذاكرة عاملة ومرونة معرفية باستخدام'],
-  fine_motor: ['تدخل حركة دقيقة وتنسيق يدوي باستخدام', 'تدخل قبضة وظيفية وتنسيق بصري حركي باستخدام', 'تدخل تحكم حركي دقيق باستخدام'],
-  gross_motor: ['تدخل حركة كلية وتكامل حسي حركي باستخدام', 'تدخل توازن ديناميكي ووعي جسدي باستخدام', 'تدخل تكامل حسي حركي ووضعية باستخدام'],
-  bilateral_coordination: ['تدخل تنسيق ثنائي وتكامل بين نصفي الجسم باستخدام', 'تدخل ثبات وتنفيذ ثنائي اليدين باستخدام', 'تدخل تخطيط حركي ثنائي باستخدام'],
+  sensory_regulation: ['تدخل تنظيم حسي وتكامل حسي باستخدام', 'تدخل معالجة حسية متعددة الأنظمة باستخدام', 'تدخل تنظيم ذاتي وإثارة باستخدام', 'تدخل استكشاف حسي هادف باستخدام'],
+  motor_planning: ['تدخل تخطيط حركي وتسلسل حركي باستخدام', 'تدخل ذاكرة حركية ومرونة حركية باستخدام', 'تدخل تمثيل حركي وتنفيذ باستخدام', 'تدخل برمجة حركية متسلسلة باستخدام'],
+  executive_function: ['تدخل مهارات تنفيذية ووظائف معرفية باستخدام', 'تدخل تخطيط وتنظيم وكبح اندفاع باستخدام', 'تدخل ذاكرة عاملة ومرونة معرفية باستخدام', 'تدخل تنفيذ مراقَب وتسلسل باستخدام'],
+  fine_motor: ['تدخل حركة دقيقة وتنسيق يدوي باستخدام', 'تدخل قبضة وظيفية وتنسيق بصري حركي باستخدام', 'تدخل تحكم حركي دقيق باستخدام', 'تدخل تنسيق بصري حركي ووضع هدف باستخدام'],
+  gross_motor: ['تدخل حركة كلية وتكامل حسي حركي باستخدام', 'تدخل توازن ديناميكي ووعي جسدي باستخدام', 'تدخل تكامل حسي حركي ووضعية باستخدام', 'تدخل مشي متحكم وتوازن باستخدام'],
+  bilateral_coordination: ['تدخل تنسيق ثنائي وتكامل بين نصفي الجسم باستخدام', 'تدخل ثبات وتنفيذ ثنائي اليدين باستخدام', 'تدخل تخطيط حركي ثنائي باستخدام', 'تدخل تثبيت ثنائي ونقل مشترك باستخدام'],
 };
 
 /** Step opener variation (first verb in a step) — تنويع صيغ التوجيه */
@@ -413,71 +444,83 @@ const STEP_VERB = {
   haveChild: ['ينفذ', 'يقوم بـ', 'ينجز', 'يؤدي'] as const,
 };
 
-/** Therapeutic goal full-sentence variants (parent) — صيغ متنوعة للهدف العلاجي */
+/** Therapeutic goal full-sentence variants (parent) — صيغ متنوعة للهدف العلاجي، تجنّب العبارات النمطية */
 const GOAL_VARIANTS_PARENT: Record<TherapeuticFocus, readonly string[]> = {
   sensory_regulation: [
     'مساعدة الطفل على تنظيم استجابته للمؤثرات الحسية والشعور بالهدوء',
     'دعم تنظيم الإثارة الحسية لدى الطفل ووصوله إلى حالة هدوء',
     'تعزيز معالجة الطفل للمدخلات الحسية بشكل منظم وهادئ',
+    'تعويد الطفل على الاستكشاف اللمسي والبصري بوتيرة هادئة',
   ],
   motor_planning: [
     'تعويد الطفل على التفكير في الخطوات قبل الحركة وتنفيذها بالترتيب',
     'تنمية قدرة الطفل على وضع خطة حركية ثم تنفيذها خطوة بخطوة',
     'دعم التخطيط الحركي والتنفيذ المتسلسل دون تخطي خطوات',
+    'تعزيز تمثيل المسار ذهنياً ثم تنفيذه مع التحقق عند كل خطوة',
   ],
   executive_function: [
     'تعزيز قدرة الطفل على وضع خطة وترتيب وتنفيذها دون تخطي خطوات',
     'تنمية التخطيط والتنظيم والتنفيذ بالترتيب مع كبح الاندفاع',
     'دعم الترتيب الذهني والتنفيذ المتسلسل والتحقق من كل خطوة',
+    'تقوية الذاكرة العاملة عبر التخطيط ثم التنفيذ ثم الاستدعاء',
   ],
   fine_motor: [
     'تقوية تحكم الطفل بأصابعه ويديه وحركاته الدقيقة',
     'تنمية القبضة الوظيفية والتحكم الحركي الدقيق في اليدين',
     'تعزيز التنسيق بين العين واليد والحركات الصغيرة المنضبطة',
+    'دعم الحركة المنفصلة للأصابع والوضع الدقيق داخل الهدف',
   ],
   gross_motor: [
     'تقوية حركة الجسم الكبيرة وتحقيق التوازن أثناء المشي والوقوف',
     'تنمية التوازن والحركة الكلية والثبات الوضعي',
     'دعم التكامل الحسي الحركي والوعي بالجسم والمكان',
+    'تعزيز المشي المتحكم ورفع الرجل مع الحفاظ على التوازن',
   ],
   bilateral_coordination: [
     'تعويد الطفل على استخدام يديه معاً بتنسيق (ثبات إحداهما وعمل الأخرى)',
     'تنمية التنسيق الثنائي بين اليدين والعمل المتعاون لهما',
     'تعزيز ثبات اليد المساعدة وتنفيذ اليد المهيمنة مع التبديل',
+    'دعم التثبيت بيد والتنفيذ بالأخرى ثم النقل بيدين معاً',
   ],
 };
 
-/** Therapeutic goal full-sentence variants (therapist) — صيغ علاجية احترافية */
+/** Therapeutic goal full-sentence variants (therapist) — صيغ علاجية احترافية متنوّعة */
 const GOAL_VARIANTS_THERAPIST: Record<TherapeuticFocus, readonly string[]> = {
   sensory_regulation: [
     'تحسين معالجة المعلومات الحسية متعددة الأنظمة والتنظيم الذاتي لمستوى الإثارة',
     'تعزيز التكامل الحسي والتنظيم الذاتي ومستوى اليقظة',
     'تنمية معالجة المدخلات الحسية والاستجابة المتكيفة للإثارة',
+    'تحسين مستوى اليقظة والاستجابة الهادئة للمؤثرات الحسية',
   ],
   motor_planning: [
     'تحسين التخطيط الحركي والتسلسل الحركي والذاكرة الحركية والمرونة في تعديل الخطة',
     'تعزيز تمثيل الحركة والتنفيذ المتسلسل والمرونة الحركية',
     'تنمية البرمجة الحركية والذاكرة الحركية وتعديل الخطة عند الطلب',
+    'تحسين التمثيل الحركي للمسار ثم التنفيذ المراقَب مع التحقق بعد كل خطوة',
   ],
   executive_function: [
     'تحسين التخطيط والتنظيم والمرونة المعرفية والذاكرة العاملة وكبح الاندفاع',
     'تعزيز الوظائف التنفيذية والتخطيط والتنفيذ المراقَب والذاكرة العاملة',
     'تنمية كبح الاندفاع والتخطيط المتسلسل والتحقق من التنفيذ',
+    'تحسين صياغة الخطة وتوثيقها ثم التنفيذ المتسلسل والاستدعاء من الذاكرة',
   ],
   fine_motor: [
     'تحسين الحركة الدقيقة والقبضة الوظيفية والتنسيق اليدوي والتنسيق البصري الحركي والتحكم الحركي',
     'تعزيز التنسيق البصري الحركي والتحكم في القبضة والحركات المنفصلة',
     'تنمية القبضة الثلاثية والتحكم الرأسي والدوراني ووضع الهدف بدقة',
+    'تحسين التثبيت والقبضة الوظيفية ووضع العنصر داخل الهدف بدقة',
   ],
   gross_motor: [
     'تحسين الحركة الكلية والتوازن الديناميكي والتكامل الحسي الحركي والوعي المكاني والجسدي',
     'تعزيز التوازن الثابت والديناميكي والمشي الأمامي والخلفي والوضعية',
     'تنمية التكامل الحسي الحركي والوعي بالجسم والمشي المتحكم',
+    'تحسين المشي المتحكم ورفع الرجل مع الحفاظ على التوازن والوضعية',
   ],
   bilateral_coordination: [
     'تحسين التنسيق الثنائي وتكامل نصفي الجسم والتخطيط الحركي الثنائي والتكامل الحسي',
     'تعزيز ثبات اليد غير المهيمنة وتنفيذ اليد المهيمنة والتبديل والتنسيق المركّب',
     'تنمية التثبيت الثنائي والتنفيذ بيد واحدة ونقل الجسم بيدين معاً',
+    'تحسين التثبيت بقبضة وظيفية والتنفيذ باليد الأخرى ثم النقل المشترك',
   ],
 };
 
@@ -636,9 +679,11 @@ function formatActivityInArabic(
   activity: Activity,
   age: number,
   userMode: UserMode,
-  variantSeed: number = 0
+  variantSeed: number = 0,
+  /** When provided, use this as the Arabic element name (finalized/cleaned) instead of translating from English. */
+  objectLabelArabicOverride?: string
 ): ArabicFormattedActivity['formattedArabic'] {
-  const objectLabelArabic = translateObjectLabel(activity.objectLabel);
+  const objectLabelArabic = objectLabelArabicOverride ?? translateObjectLabel(activity.objectLabel);
   const ageDescriptor = translateAgeDescriptor(age, userMode);
   const envPhrase = activity.element
     ? getElementContextPhrase(activity.element, objectLabelArabic)
@@ -1132,27 +1177,37 @@ export function formatActivitiesInArabic(
   activities: Activity[],
   labels: string[],
   age: number,
-  userMode: UserMode
+  userMode: UserMode,
+  /** Map from raw English label to finalized Arabic element name; when provided, activity titles use this instead of translating from English. */
+  labelToArabicMap?: Map<string, string>
 ): {
   labelsArabic: string[];
   activitiesArabic: ArabicFormattedActivity[];
 } {
   const labelsArabic = labels.map(translateObjectLabel);
-  
+
   const activitiesArabic: ArabicFormattedActivity[] = activities.map((activity, index) => {
+    const objectLabelArabicResolved =
+      labelToArabicMap?.get(activity.objectLabel) ?? translateObjectLabel(activity.objectLabel);
     const therapeuticFocusArabic = therapeuticFocusTranslations[activity.therapeuticFocus][userMode];
     const variantSeed = index + (activity.humanizeOffset ?? 0);
-    const formattedArabic = formatActivityInArabic(activity, age, userMode, variantSeed);
-    
+    const formattedArabic = formatActivityInArabic(
+      activity,
+      age,
+      userMode,
+      variantSeed,
+      objectLabelArabicResolved
+    );
+
     return {
       objectLabel: activity.objectLabel,
-      objectLabelArabic: translateObjectLabel(activity.objectLabel),
+      objectLabelArabic: objectLabelArabicResolved,
       therapeuticFocus: activity.therapeuticFocus,
       therapeuticFocusArabic,
       formattedArabic,
     };
   });
-  
+
   return {
     labelsArabic,
     activitiesArabic,

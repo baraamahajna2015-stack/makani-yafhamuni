@@ -4,6 +4,7 @@ import * as mobilenet from '@tensorflow-models/mobilenet';
 import sharp from 'sharp';
 import { reasonOverDetections, type ReasonedElement } from './ai-reasoning';
 import { formatActivitiesInArabic, type Activity } from './arabic-formatter';
+import { validateDetectedElements } from './element-validation';
 import { analyzeEnvironment, buildActivitiesFromEnvironment, type EnvironmentElement } from './environment';
 import { refineActivities } from './refinement';
 import { enrichElementsWithSafety, validateAndReplaceActivities } from './safety-validation';
@@ -77,9 +78,14 @@ export async function POST(req: NextRequest) {
     const reasonedElements: ReasonedElement[] = reasonOverDetections(
       filteredPredictions.map((p) => ({ className: p.className, probability: p.probability }))
     );
-    const labelToNameAr = new Map(reasonedElements.map((r) => [r.rawLabel, r.elementNameAr]));
+    const { labels: validatedLabels, reasonedElements: validatedReasonedElements } = validateDetectedElements(
+      labels,
+      reasonedElements,
+      age
+    );
+    const labelToNameAr = new Map(validatedReasonedElements.map((r) => [r.rawLabel, r.elementNameAr]));
 
-    const elements = analyzeEnvironment(labels);
+    const elements = analyzeEnvironment(validatedLabels);
     enrichElementsWithSafety(elements);
     let envActivities = buildActivitiesFromEnvironment(elements, age, 5);
     envActivities = validateAndReplaceActivities(envActivities, elements, age);
@@ -95,22 +101,23 @@ export async function POST(req: NextRequest) {
 
     const { labelsArabic, activitiesArabic } = formatActivitiesInArabic(
       activities,
-      labels,
+      validatedLabels,
       age,
-      userMode
+      userMode,
+      labelToNameAr
     );
-    const labelsArabicWithReasoning = labels.map(
+    const labelsArabicWithReasoning = validatedLabels.map(
       (label, i) => labelToNameAr.get(label) ?? labelsArabic[i]
     );
 
     return NextResponse.json({
       age,
-      labels,
+      labels: validatedLabels,
       labelsArabic: labelsArabicWithReasoning,
       activities,
       activitiesArabic,
       userMode,
-      reasonedElements,
+      reasonedElements: validatedReasonedElements,
     });
   } catch (err) {
     console.error('Error in /api/analyze:', err);

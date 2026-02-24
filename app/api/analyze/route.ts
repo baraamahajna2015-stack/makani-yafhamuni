@@ -62,18 +62,26 @@ export async function POST(req: NextRequest) {
     const expanded = imageTensor.expandDims(0);
 
     const model = await getModel();
-    // Request more predictions so we can select 3–5 contextually meaningful, tangible objects
-    const topK = 10;
+    // Request top 5 predictions for 3–5 contextually meaningful objects after filtering
+    const topK = 5;
     const predictions = await model.classify(expanded as tf.Tensor3D, topK);
 
     imageTensor.dispose();
     expanded.dispose();
 
     const forbiddenKeywords = ['face', 'person', 'people', 'man', 'woman', 'boy', 'girl', 'human'];
+    const genericLabels = ['object', 'entity', 'thing', 'item', 'something'];
 
     const filteredPredictions = predictions.filter((p) => {
+      if (p.probability <= 0.2) return false;
       const lower = p.className.toLowerCase();
-      return !forbiddenKeywords.some((kw) => lower.includes(kw));
+      if (forbiddenKeywords.some((kw) => lower.includes(kw))) return false;
+      const isGeneric = genericLabels.some((gw) => {
+        const norm = lower.split(',')[0].trim().replace(/\s+/g, ' ');
+        return norm === gw || norm === `${gw}s` || norm.startsWith(`${gw} `);
+      });
+      if (isGeneric) return false;
+      return true;
     });
     const labels = filteredPredictions.map((p) => p.className);
 

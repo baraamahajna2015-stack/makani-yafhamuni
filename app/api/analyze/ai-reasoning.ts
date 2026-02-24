@@ -71,6 +71,11 @@ function interpretOne(
   const n = norm(className);
   const base = n.replace(/\s+/g, '');
 
+  // Exclude generic or irrelevant labels (no meaningful object)
+  const genericOrIrrelevant = ['object', 'entity', 'thing', 'item', 'something'];
+  const firstWord = n.split(/\s+/)[0] ?? n;
+  if (genericOrIrrelevant.some((w) => firstWord === w || firstWord === `${w}s`)) return null;
+
   // Exclude irrelevant or culturally inappropriate for therapeutic/home environment
   const exclude = ['swastika', 'confederate', 'cartoon', 'comic', 'mask', 'weapon', 'gun', 'rifle', 'grenade'];
   if (exclude.some((w) => n.includes(w))) return null;

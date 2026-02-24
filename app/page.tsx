@@ -264,7 +264,12 @@ export default function Home() {
                       functionalCategory: "",
                       confidenceAfterProcessing: 0,
                     }));
-                const isEmpty = elements.length === 0;
+                // Rendering-level filter: do not show the generic placeholder label
+                const EXCLUDED_ELEMENT_LABEL = "عنصر من بيئة الطفل";
+                const filteredElements = elements.filter(
+                  (el) => ensureArabicDisplayName(el.elementNameAr) !== EXCLUDED_ELEMENT_LABEL
+                );
+                const isEmpty = filteredElements.length === 0;
                 if (isEmpty) {
                   return (
                     <p className="mt-2 text-sm leading-loose text-zinc-600 dark:text-zinc-400">
@@ -274,7 +279,7 @@ export default function Home() {
                 }
                 return (
                   <ul className="mt-2 space-y-2 text-sm leading-loose">
-                    {elements.map((el, index) => (
+                    {filteredElements.map((el, index) => (
                       <li
                         key={
                           useReasoned

@@ -28,6 +28,23 @@ const BLOCKLIST_KEYWORDS: readonly string[] = [
   'rifle', 'grenade', 'restaurant', 'dome', 'spot', 'mask',
 ];
 
+/** Tangible, interaction-based objects (child can touch, move, use in activities). Prioritized first. */
+const INTERACTION_FIRST_KEYWORDS: readonly string[] = [
+  'ball', 'toy', 'doll', 'teddy', 'block', 'cube', 'puzzle', 'lego', 'book', 'pillow',
+  'blanket', 'quilt', 'cushion', 'basket', 'box', 'bowl', 'plate', 'cup', 'towel', 'card',
+  'notebook', 'remote', 'keyboard', 'carpet', 'rug', 'chair', 'stool', 'bench', 'ottoman',
+  'table', 'desk', 'couch', 'sofa', 'bed', 'mat', 'shelf', 'drawer', 'bookcase', 'wardrobe',
+  'cabinet', 'bike', 'bicycle', 'swing', 'lamp', 'mirror', 'plant', 'vase',
+];
+
+/** Background/structural elements; include only when needed to reach 3–5 objects. */
+const STRUCTURAL_OR_BACKGROUND_KEYWORDS: readonly string[] = [
+  'wall', 'floor', 'door', 'window', 'stairs', 'step',
+];
+
+/** Target: 3–5 contextually meaningful objects for the child's environment. */
+const TARGET_OBJECT_COUNT_MAX = 5;
+
 /** Minimum confidence to keep an element (avoids low-confidence misdetections). */
 const MIN_CONFIDENCE = 0.4;
 
@@ -70,6 +87,15 @@ function excludedForAge(label: string, age: number): boolean {
   return EXCLUDE_FOR_YOUNG.some((kw) => n.includes(kw));
 }
 
+/** Priority for ordering: 2 = tangible/interaction-based, 1 = neutral, 0 = structural/background. */
+function interactionPriority(label: string): number {
+  const n = normalize(label);
+  const key = normalizedKey(label);
+  if (INTERACTION_FIRST_KEYWORDS.some((kw) => key.includes(kw.replace(/\s+/g, '')) || n.includes(kw))) return 2;
+  if (STRUCTURAL_OR_BACKGROUND_KEYWORDS.some((kw) => key.includes(kw.replace(/\s+/g, '')) || n.includes(kw))) return 0;
+  return 1;
+}
+
 /**
  * Validates detected elements for contextual appropriateness in a child's environment.
  * Call after localization (reasoned elements / labels) and before activity generation.
@@ -96,8 +122,17 @@ export function validateDetectedElements(
     allowedRaw.add(label);
   }
 
-  const filteredLabels = labels.filter((l) => allowedRaw.has(l));
+  let filteredLabels = labels.filter((l) => allowedRaw.has(l));
   const filteredReasoned = reasonedElements.filter((r) => allowedRaw.has(r.rawLabel));
 
-  return { labels: filteredLabels, reasonedElements: filteredReasoned };
+  // Order by priority: tangible/interaction-based first, structural/background last; cap at 3–5 objects
+  filteredLabels = filteredLabels
+    .sort((a, b) => interactionPriority(b) - interactionPriority(a))
+    .slice(0, TARGET_OBJECT_COUNT_MAX);
+  const allowedSet = new Set(filteredLabels);
+  const reasonedOrdered = filteredReasoned
+    .filter((r) => allowedSet.has(r.rawLabel))
+    .sort((a, b) => filteredLabels.indexOf(a.rawLabel) - filteredLabels.indexOf(b.rawLabel));
+
+  return { labels: filteredLabels, reasonedElements: reasonedOrdered };
 }

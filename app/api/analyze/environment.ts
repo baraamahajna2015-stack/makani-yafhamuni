@@ -105,8 +105,11 @@ function getRisksForLabel(label: string): string[] {
   return [];
 }
 
+/** Target: 3–5 contextually meaningful, tangible elements for activity generation. */
+const MAX_ENVIRONMENT_ELEMENTS = 5;
+
 /**
- * Extract at least 5 concrete physical elements from detected labels,
+ * Extract 3–5 concrete physical elements from detected labels (prioritized upstream),
  * with spatial position, height, stability, surrounding space, texture,
  * motor/sensory opportunities, and risks.
  */
@@ -114,9 +117,9 @@ export function analyzeEnvironment(labels: string[]): EnvironmentElement[] {
   const seen = new Set<string>();
   const elements: EnvironmentElement[] = [];
   let positionIndex = 0;
-  const n = Math.min(labels.length, 8);
+  const n = Math.min(labels.length, MAX_ENVIRONMENT_ELEMENTS);
 
-  for (let i = 0; i < n && elements.length < 8; i++) {
+  for (let i = 0; i < n && elements.length < MAX_ENVIRONMENT_ELEMENTS; i++) {
     const raw = labels[i];
     const base = raw.split(',')[0].trim().toLowerCase();
     const key = base.replace(/\s+/g, '');

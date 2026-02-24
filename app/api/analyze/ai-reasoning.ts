@@ -53,6 +53,16 @@ function relevanceWeight(normalized: string): number {
   return 0.75;
 }
 
+/** Priority for ordering: 2 = tangible/interaction-based, 0 = structural/background. Used to surface 3–5 meaningful objects. */
+const INTERACTION_FIRST = ['ball', 'toy', 'doll', 'teddy', 'block', 'cube', 'puzzle', 'lego', 'book', 'pillow', 'blanket', 'quilt', 'cushion', 'basket', 'box', 'bowl', 'plate', 'cup', 'towel', 'carpet', 'rug', 'chair', 'stool', 'bench', 'ottoman', 'table', 'desk', 'couch', 'sofa', 'bed', 'shelf', 'drawer', 'bookcase', 'wardrobe', 'cabinet', 'bike', 'bicycle', 'swing', 'lamp', 'mirror', 'plant', 'vase'];
+const STRUCTURAL_BACKGROUND = ['wall', 'floor', 'door', 'window', 'stairs', 'step'];
+
+function interactionPriorityScore(normalized: string): number {
+  if (INTERACTION_FIRST.some((w) => normalized.includes(w))) return 2;
+  if (STRUCTURAL_BACKGROUND.some((w) => normalized.includes(w))) return 0;
+  return 1;
+}
+
 /** Interpret single label: Arabic name, category, context, confidence. No placeholders. */
 function interpretOne(
   className: string,
@@ -212,6 +222,7 @@ function interpretOne(
 /**
  * Run AI reasoning on MobileNet predictions.
  * Returns only relevant, context-aware elements; filters irrelevant/culturally inappropriate.
+ * Sorted so tangible, interaction-based objects come first; structural/background last.
  * All output in professional Arabic.
  */
 export function reasonOverDetections(predictions: RawPrediction[]): ReasonedElement[] {
@@ -227,6 +238,14 @@ export function reasonOverDetections(predictions: RawPrediction[]): ReasonedElem
       out.push(el);
     }
   }
+
+  // Prioritize tangible, interaction-based objects; put structural/background last
+  out.sort((a, b) => {
+    const pa = interactionPriorityScore(norm(a.rawLabel));
+    const pb = interactionPriorityScore(norm(b.rawLabel));
+    if (pb !== pa) return pb - pa;
+    return b.confidenceAfterProcessing - a.confidenceAfterProcessing;
+  });
 
   return out;
 }

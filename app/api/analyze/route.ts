@@ -62,7 +62,9 @@ export async function POST(req: NextRequest) {
     const expanded = imageTensor.expandDims(0);
 
     const model = await getModel();
-    const predictions = await model.classify(expanded as tf.Tensor3D);
+    // Request more predictions so we can select 3–5 contextually meaningful, tangible objects
+    const topK = 10;
+    const predictions = await model.classify(expanded as tf.Tensor3D, topK);
 
     imageTensor.dispose();
     expanded.dispose();

@@ -1,8 +1,10 @@
 /**
- * Silent Arabic safeguard for detected element names (display-only).
- * - If the name is in English → translate to Arabic before rendering.
- * - If already in Arabic → return as-is.
- * Does not change analysis, API, data structures, or rendering flow.
+ * Strict Arabic mapping layer for detected element names (rendering only).
+ * All detected object labels must pass through the localization function.
+ * - If label is in English and a direct equivalent exists → translate to Arabic.
+ * - If label is in English and no equivalent exists → return a clear Arabic descriptive label.
+ * - If label is already in Arabic → return unchanged.
+ * Never renders raw English in the UI. Does not modify AI analysis or API schema.
  */
 
 const ARABIC_SCRIPT_RANGE = /[\u0600-\u06FF\u0750-\u077F]/;
@@ -105,22 +107,26 @@ function normalizeForLookup(s: string): string {
     .replace(/_/g, ' ');
 }
 
+/** Fallback when no direct Arabic equivalent exists: clear descriptive label, never raw English. */
+const FALLBACK_ARABIC_LABEL = "عنصر من البيئة";
+
 function translateToArabic(name: string): string {
   const key = normalizeForLookup(name);
   if (DISPLAY_TRANSLATIONS[key]) return DISPLAY_TRANSLATIONS[key];
   for (const [en, ar] of Object.entries(DISPLAY_TRANSLATIONS)) {
     if (key.includes(en) || en.includes(key)) return ar;
   }
-  return key;
+  return FALLBACK_ARABIC_LABEL;
 }
 
 /**
- * Ensures a detected element/object name is shown in Arabic.
- * - If the string contains Arabic script → returned unchanged.
- * - If it looks English (Latin script) → translated to Arabic when possible.
+ * Localization mapping for detected element names. All labels must pass through this before rendering.
+ * - Arabic script → returned unchanged.
+ * - English (Latin) → accurate Arabic equivalent, or clear Arabic descriptive label if none exists.
+ * Never returns raw English.
  */
 export function ensureArabicDisplayName(name: string): string {
-  if (!name || typeof name !== 'string') return name;
+  if (!name || typeof name !== "string") return name;
   const trimmed = name.trim();
   if (ARABIC_SCRIPT_RANGE.test(trimmed)) return trimmed;
   if (!HAS_LATIN.test(trimmed)) return trimmed;

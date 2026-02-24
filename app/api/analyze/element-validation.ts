@@ -123,7 +123,18 @@ export function validateDetectedElements(
   }
 
   let filteredLabels = labels.filter((l) => allowedRaw.has(l));
-  const filteredReasoned = reasonedElements.filter((r) => allowedRaw.has(r.rawLabel));
+  let filteredReasoned = reasonedElements.filter((r) => allowedRaw.has(r.rawLabel));
+
+  // Ensure at least 1 item when we had predictions, so we never return empty
+  if (filteredLabels.length === 0 && reasonedElements.length > 0) {
+    const best = reasonedElements
+      .filter((r) => !matchesBlocklist(normalize(r.rawLabel)) && !excludedForAge(r.rawLabel, age))
+      .sort((a, b) => b.confidenceAfterProcessing - a.confidenceAfterProcessing)[0];
+    if (best) {
+      filteredLabels = [best.rawLabel];
+      filteredReasoned = [best];
+    }
+  }
 
   // Order by priority: tangible/interaction-based first, structural/background last; cap at 3–5 objects
   filteredLabels = filteredLabels

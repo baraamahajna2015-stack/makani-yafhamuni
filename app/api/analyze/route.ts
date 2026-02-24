@@ -62,27 +62,40 @@ export async function POST(req: NextRequest) {
     const expanded = imageTensor.expandDims(0);
 
     const model = await getModel();
-    // Request top 5 predictions for 3–5 contextually meaningful objects after filtering
     const topK = 5;
     const predictions = await model.classify(expanded as tf.Tensor3D, topK);
 
     imageTensor.dispose();
     expanded.dispose();
 
-    const forbiddenKeywords = ['face', 'person', 'people', 'man', 'woman', 'boy', 'girl', 'human'];
-    const genericLabels = ['object', 'entity', 'thing', 'item', 'something'];
+    // Sort by confidence (highest first)
+    const sorted = [...predictions].sort((a, b) => b.probability - a.probability);
 
-    const filteredPredictions = predictions.filter((p) => {
-      if (p.probability <= 0.2) return false;
+    const forbiddenKeywords = ['face', 'person', 'people', 'man', 'woman', 'boy', 'girl', 'human'];
+    const genericLabels = ['entity', 'object'];
+
+    const isGeneric = (lower: string) => {
+      const norm = lower.split(',')[0].trim().replace(/\s+/g, ' ');
+      return genericLabels.some((gw) => norm === gw || norm === `${gw}s` || norm.startsWith(`${gw} `));
+    };
+
+    const aboveThreshold = sorted.filter((p) => {
       const lower = p.className.toLowerCase();
       if (forbiddenKeywords.some((kw) => lower.includes(kw))) return false;
-      const isGeneric = genericLabels.some((gw) => {
-        const norm = lower.split(',')[0].trim().replace(/\s+/g, ' ');
-        return norm === gw || norm === `${gw}s` || norm.startsWith(`${gw} `);
-      });
-      if (isGeneric) return false;
-      return true;
+      if (isGeneric(lower)) return false;
+      return p.probability >= 0.18;
     });
+
+    const filteredPredictions =
+      aboveThreshold.length > 0
+        ? aboveThreshold
+        : sorted.filter((p) => {
+            const lower = p.className.toLowerCase();
+            if (forbiddenKeywords.some((kw) => lower.includes(kw))) return false;
+            if (isGeneric(lower)) return false;
+            return true;
+          }).slice(0, 1);
+
     const labels = filteredPredictions.map((p) => p.className);
 
     const reasonedElements: ReasonedElement[] = reasonOverDetections(

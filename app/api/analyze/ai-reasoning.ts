@@ -71,10 +71,10 @@ function interpretOne(
   const n = norm(className);
   const base = n.replace(/\s+/g, '');
 
-  // Exclude generic or irrelevant labels (no meaningful object)
-  const genericOrIrrelevant = ['object', 'entity', 'thing', 'item', 'something'];
+  // Exclude only clearly meaningless generic labels
+  const genericLabels = ['entity', 'object'];
   const firstWord = n.split(/\s+/)[0] ?? n;
-  if (genericOrIrrelevant.some((w) => firstWord === w || firstWord === `${w}s`)) return null;
+  if (genericLabels.some((w) => firstWord === w || firstWord === `${w}s`)) return null;
 
   // Exclude irrelevant or culturally inappropriate for therapeutic/home environment
   const exclude = ['swastika', 'confederate', 'cartoon', 'comic', 'mask', 'weapon', 'gun', 'rifle', 'grenade'];
@@ -228,20 +228,29 @@ function interpretOne(
  * Run AI reasoning on MobileNet predictions.
  * Returns only relevant, context-aware elements; filters irrelevant/culturally inappropriate.
  * Sorted so tangible, interaction-based objects come first; structural/background last.
+ * Ensures at least one element is returned when any prediction exists.
  * All output in professional Arabic.
  */
 export function reasonOverDetections(predictions: RawPrediction[]): ReasonedElement[] {
   const seen = new Set<string>();
   const out: ReasonedElement[] = [];
+  let bestFallback: ReasonedElement | null = null;
 
   for (const p of predictions) {
     const n = norm(p.className);
     if (seen.has(n)) continue;
     const el = interpretOne(p.className, p.probability);
-    if (el && el.confidenceAfterProcessing >= 0.35) {
-      seen.add(n);
+    if (!el) continue;
+    seen.add(n);
+    if (el.confidenceAfterProcessing >= 0.35) {
       out.push(el);
+    } else if (!bestFallback || el.confidenceAfterProcessing > bestFallback.confidenceAfterProcessing) {
+      bestFallback = el;
     }
+  }
+
+  if (out.length === 0 && bestFallback) {
+    out.push(bestFallback);
   }
 
   // Prioritize tangible, interaction-based objects; put structural/background last

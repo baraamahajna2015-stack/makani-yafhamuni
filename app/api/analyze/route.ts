@@ -61,16 +61,14 @@ export async function POST(req: NextRequest) {
     );
 
     const model = await getModel();
-    const minScore = 0.55;
-    const maxNumBoxes = 20;
+    const minScore = 0.25;
+    const maxNumBoxes = 50;
     const detections = await model.detect(imageTensor as tf.Tensor3D, maxNumBoxes, minScore);
 
     imageTensor.dispose();
 
-    // Filter by confidence > 0.55 and map to { className, probability }
-    const predictions = detections
-      .filter((d) => d.score > 0.55)
-      .map((d) => ({ className: d.class, probability: d.score }));
+    // Keep all detections at or above threshold; include confidence in internal processing
+    const predictions = detections.map((d) => ({ className: d.class, probability: d.score }));
     const sorted = [...predictions].sort((a, b) => b.probability - a.probability);
 
     const forbiddenKeywords = ['face', 'person', 'people', 'man', 'woman', 'boy', 'girl', 'human'];
@@ -96,7 +94,7 @@ export async function POST(req: NextRequest) {
             if (forbiddenKeywords.some((kw) => lower.includes(kw))) return false;
             if (isGeneric(lower)) return false;
             return true;
-          }).slice(0, 1);
+          }).slice(0, 3);
 
     const labels = filteredPredictions.map((p) => p.className);
 

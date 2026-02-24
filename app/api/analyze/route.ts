@@ -7,6 +7,7 @@ import { formatActivitiesInArabic, type Activity } from './arabic-formatter';
 import { validateDetectedElements } from './element-validation';
 import { analyzeEnvironment, buildActivitiesFromEnvironment, type EnvironmentElement } from './environment';
 import { refineActivities } from './refinement';
+import { inferSceneFromObjects } from './scene-reasoning';
 import { enrichElementsWithSafety, validateAndReplaceActivities } from './safety-validation';
 
 export const runtime = 'nodejs';
@@ -133,6 +134,8 @@ export async function POST(req: NextRequest) {
       (label, i) => labelToNameAr.get(label) ?? labelsArabic[i]
     );
 
+    const environmentSummary = inferSceneFromObjects(validatedLabels);
+
     return NextResponse.json({
       age,
       labels: validatedLabels,
@@ -141,6 +144,7 @@ export async function POST(req: NextRequest) {
       activitiesArabic,
       userMode,
       reasonedElements: validatedReasonedElements,
+      ...(environmentSummary != null && { environmentSummary }),
     });
   } catch (err) {
     console.error('Error in /api/analyze:', err);

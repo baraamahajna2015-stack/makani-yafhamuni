@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as tf from '@tensorflow/tfjs';
-import * as mobilenet from '@tensorflow-models/mobilenet';
+import * as cocoSsd from '@tensorflow-models/coco-ssd';
 import sharp from 'sharp';
 import { reasonOverDetections, type ReasonedElement } from './ai-reasoning';
 import { formatActivitiesInArabic, type Activity } from './arabic-formatter';
@@ -14,11 +14,11 @@ export const runtime = 'nodejs';
 
 export type { Activity };
 
-let modelPromise: Promise<mobilenet.MobileNet> | null = null;
+let modelPromise: Promise<Awaited<ReturnType<typeof cocoSsd.load>>> | null = null;
 
 function getModel() {
   if (!modelPromise) {
-    modelPromise = mobilenet.load({ version: 2, alpha: 1.0 });
+    modelPromise = cocoSsd.load();
   }
   return modelPromise;
 }
@@ -47,29 +47,30 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await imageFile.arrayBuffer();
     const imageBuffer = Buffer.from(arrayBuffer);
 
-    // Process image with sharp: resize to 224x224 and get raw RGB data
+    // Process image with sharp: resize to 300x300 for COCO-SSD and get raw RGB data
     const { data, info } = await sharp(imageBuffer)
-      .resize(224, 224, { fit: 'fill' })
+      .resize(300, 300, { fit: 'fill' })
       .removeAlpha()
       .raw()
       .toBuffer({ resolveWithObject: true });
 
-    // Convert RGB data to tensor (shape: [224, 224, 3])
-    // MobileNet expects RGB format
+    // Convert RGB data to tensor (shape: [height, width, 3]) for COCO-SSD
     const imageTensor = tf.tensor3d(
       new Uint8Array(data),
       [info.height, info.width, 3]
     );
-    const expanded = imageTensor.expandDims(0);
 
     const model = await getModel();
-    const topK = 5;
-    const predictions = await model.classify(expanded as tf.Tensor3D, topK);
+    const minScore = 0.55;
+    const maxNumBoxes = 20;
+    const detections = await model.detect(imageTensor as tf.Tensor3D, maxNumBoxes, minScore);
 
     imageTensor.dispose();
-    expanded.dispose();
 
-    // Sort by confidence (highest first)
+    // Filter by confidence > 0.55 and map to { className, probability }
+    const predictions = detections
+      .filter((d) => d.score > 0.55)
+      .map((d) => ({ className: d.class, probability: d.score }));
     const sorted = [...predictions].sort((a, b) => b.probability - a.probability);
 
     const forbiddenKeywords = ['face', 'person', 'people', 'man', 'woman', 'boy', 'girl', 'human'];
@@ -84,7 +85,7 @@ export async function POST(req: NextRequest) {
       const lower = p.className.toLowerCase();
       if (forbiddenKeywords.some((kw) => lower.includes(kw))) return false;
       if (isGeneric(lower)) return false;
-      return p.probability >= 0.18;
+      return true;
     });
 
     const filteredPredictions =

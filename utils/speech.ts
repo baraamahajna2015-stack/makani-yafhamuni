@@ -1,31 +1,23 @@
-let currentUtterance: SpeechSynthesisUtterance | null = null;
-
-/**
- * Speak Arabic text using the browser's speech synthesis.
- * Uses an Arabic voice when available.
- */
-export function speakArabic(text: string): void {
-  if (typeof window === "undefined" || !window.speechSynthesis) return;
-
-  window.speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "ar-SA";
-  utterance.rate = 0.9;
-
-  const voices = window.speechSynthesis.getVoices();
-  const arabicVoice = voices.find((v) => v.lang.startsWith("ar"));
-  if (arabicVoice) utterance.voice = arabicVoice;
-
-  currentUtterance = utterance;
-  window.speechSynthesis.speak(utterance);
+function getArabicVoice(): SpeechSynthesisVoice | null {
+  const voices = typeof window !== "undefined" ? window.speechSynthesis.getVoices() : [];
+  return voices.find((v) => v.lang.includes("ar")) ?? voices[0] ?? null;
 }
 
-/**
- * Stop any ongoing speech synthesis.
- */
+export function speakArabic(text: string): void {
+  if (typeof window === "undefined") return;
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "ar-SA";
+  utterance.rate = 0.95;
+  utterance.pitch = 1;
+  utterance.volume = 1;
+  const voice = getArabicVoice();
+  if (voice) utterance.voice = voice;
+  synth.speak(utterance);
+}
+
 export function stopSpeech(): void {
-  if (typeof window === "undefined" || !window.speechSynthesis) return;
+  if (typeof window === "undefined") return;
   window.speechSynthesis.cancel();
-  currentUtterance = null;
 }

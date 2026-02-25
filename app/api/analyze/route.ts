@@ -61,40 +61,37 @@ export async function POST(req: NextRequest) {
     );
 
     const model = await getModel();
-    const minScore = 0.25;
     const maxNumBoxes = 50;
-    const detections = await model.detect(imageTensor as tf.Tensor3D, maxNumBoxes, minScore);
+    // Request more candidates (low minScore) so we can apply 0.25 primary filter and backfill up to 3
+    const detections = await model.detect(imageTensor as tf.Tensor3D, maxNumBoxes, 0.05);
 
     imageTensor.dispose();
 
-    // Keep all detections at or above threshold; include confidence in internal processing
     const predictions = detections.map((d) => ({ className: d.class, probability: d.score }));
     const sorted = [...predictions].sort((a, b) => b.probability - a.probability);
 
-    const forbiddenKeywords = ['face', 'person', 'people', 'man', 'woman', 'boy', 'girl', 'human'];
-    const genericLabels = ['entity', 'object'];
+    // Remove only "person" class; keep all other detections for min-3 guarantee
+    const isPerson = (p: { className: string }) => p.className.toLowerCase().trim() === 'person';
+    const nonPerson = sorted.filter((p) => !isPerson(p));
 
-    const isGeneric = (lower: string) => {
-      const norm = lower.split(',')[0].trim().replace(/\s+/g, ' ');
-      return genericLabels.some((gw) => norm === gw || norm === `${gw}s` || norm.startsWith(`${gw} `));
-    };
+    const THRESHOLD = 0.25;
+    const aboveThreshold = nonPerson.filter((p) => p.probability >= THRESHOLD);
 
-    const aboveThreshold = sorted.filter((p) => {
-      const lower = p.className.toLowerCase();
-      if (forbiddenKeywords.some((kw) => lower.includes(kw))) return false;
-      if (isGeneric(lower)) return false;
-      return true;
-    });
-
-    const filteredPredictions =
-      aboveThreshold.length > 0
-        ? aboveThreshold
-        : sorted.filter((p) => {
-            const lower = p.className.toLowerCase();
-            if (forbiddenKeywords.some((kw) => lower.includes(kw))) return false;
-            if (isGeneric(lower)) return false;
-            return true;
-          }).slice(0, 3);
+    let filteredPredictions: typeof sorted;
+    if (aboveThreshold.length >= 3) {
+      filteredPredictions = aboveThreshold;
+    } else if (aboveThreshold.length > 0) {
+      const belowThreshold = nonPerson.filter((p) => p.probability < THRESHOLD);
+      filteredPredictions = [...aboveThreshold];
+      for (const p of belowThreshold) {
+        if (filteredPredictions.length >= 3) {
+          break;
+        }
+        filteredPredictions.push(p);
+      }
+    } else {
+      filteredPredictions = nonPerson.slice(0, 3);
+    }
 
     const labels = filteredPredictions.map((p) => p.className);
 

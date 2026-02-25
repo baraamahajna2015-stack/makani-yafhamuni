@@ -315,40 +315,17 @@ export default function Home() {
                 <h2 className="text-xl font-semibold leading-snug tracking-tight text-[#1a2f4a] dark:text-[#94a8c4]">
                   {SECTIONS.suggestedActivities}
                 </h2>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      stopSpeech();
-                      const fullText = result.activitiesArabic
-                        .map((activity) => {
-                          const parts: string[] = [
-                            `اسم النشاط: ${activity.formattedArabic.activityName}`,
-                            `الهدف العلاجي: ${activity.formattedArabic.therapeuticGoal}`,
-                            "طريقة التنفيذ:",
-                            ...activity.formattedArabic.implementationSteps.map((step, i) => `${i + 1}. ${step}`),
-                            `تعديل حسب العمر: ${activity.formattedArabic.ageAdaptations}`,
-                            `مؤشرات نجاح: ${activity.formattedArabic.successIndicators}`,
-                          ];
-                          return parts.join(". ");
-                        })
-                        .join("\n\n");
-                      speakArabic(fullText);
-                    }}
-                    className="rounded-lg bg-[#1a2f4a] px-4 py-2.5 text-sm font-medium text-white shadow-md transition hover:bg-[#243b52] focus:outline-none focus:ring-2 focus:ring-[#1a2f4a] focus:ring-offset-2 dark:bg-[#1e3a5f] dark:hover:bg-[#264a6f]"
-                  >
-                    🔊 تشغيل جميع الإرشادات
-                  </button>
-                  <button
-                    type="button"
-                    onClick={stopSpeech}
-                    className="rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 shadow-md transition hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
-                  >
-                    ⏹ إيقاف الصوت
-                  </button>
-                </div>
                 <ul className="mt-5 space-y-10 text-zinc-800 dark:text-zinc-100">
-                  {result.activitiesArabic.map((activity, index) => (
+                  {result.activitiesArabic.map((activity, index) => {
+                    const activityText = [
+                      `اسم النشاط: ${activity.formattedArabic.activityName}`,
+                      `الهدف العلاجي: ${activity.formattedArabic.therapeuticGoal}`,
+                      "طريقة التنفيذ:",
+                      ...activity.formattedArabic.implementationSteps.map((step, i) => `${i + 1}. ${step}`),
+                      `تعديل حسب العمر: ${activity.formattedArabic.ageAdaptations}`,
+                      `مؤشرات نجاح: ${activity.formattedArabic.successIndicators}`,
+                    ].join(". ");
+                    return (
                     <li
                       key={`${activity.objectLabel}-${activity.therapeuticFocus}-${index}`}
                       className="animate-result-enter rounded-xl border border-slate-200 bg-white p-6 opacity-0 shadow-sm dark:border-slate-700 dark:bg-slate-900/50"
@@ -359,26 +336,6 @@ export default function Home() {
                         <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                           {activity.therapeuticFocusArabic} • {ensureArabicDisplayName(activity.objectLabelArabic)}
                         </p>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            stopSpeech();
-                            const parts: string[] = [
-                              `اسم النشاط: ${activity.formattedArabic.activityName}`,
-                              `الهدف العلاجي: ${activity.formattedArabic.therapeuticGoal}`,
-                              "طريقة التنفيذ:",
-                              ...activity.formattedArabic.implementationSteps.map((step, i) => `${i + 1}. ${step}`),
-                              `تعديل حسب العمر: ${activity.formattedArabic.ageAdaptations}`,
-                              `مؤشرات نجاح: ${activity.formattedArabic.successIndicators}`,
-                            ];
-                            speakArabic(parts.join(". "));
-                          }}
-                          className="shrink-0 rounded-md border border-zinc-200 bg-zinc-50 p-1.5 text-sm leading-none text-zinc-600 transition hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 dark:focus:ring-zinc-500"
-                          title="تشغيل إرشادات هذا النشاط"
-                          aria-label="تشغيل إرشادات هذا النشاط"
-                        >
-                          🔊
-                        </button>
                       </div>
                       <div className="space-y-5 text-sm leading-loose">
                         <div>
@@ -506,8 +463,21 @@ export default function Home() {
                           </div>
                         )}
                       </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          stopSpeech();
+                          speakArabic(activityText);
+                        }}
+                        className="mt-4 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:focus:ring-zinc-500"
+                        title="تشغيل إرشادات هذا النشاط"
+                        aria-label="تشغيل إرشادات هذا النشاط"
+                      >
+                        🔊 تشغيل إرشادات هذا النشاط
+                      </button>
                     </li>
-                  ))}
+                    );
+                  })}
                 </ul>
                 <div className="mt-10 animate-result-enter rounded-xl border border-zinc-200/80 bg-zinc-50/80 px-5 py-4 opacity-0 shadow-sm backdrop-blur-sm dark:border-zinc-700/60 dark:bg-zinc-800/50" style={{ animationDelay: `${(result.activitiesArabic?.length ?? 0) * 70}ms` }} dir="rtl">
                   <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#1a2f4a] dark:text-[#94a8c4]">

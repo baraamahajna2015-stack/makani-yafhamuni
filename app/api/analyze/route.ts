@@ -102,6 +102,10 @@ export async function POST(req: NextRequest) {
 
     const labels = filteredPredictions.map((p) => p.className);
 
+    const base64 = imageBuffer.toString('base64');
+    console.log("📸 IMAGE BASE64 LENGTH:", base64?.length);
+    console.log("📸 IMAGE BASE64 PREVIEW:", base64?.substring(0, 100));
+
     // OpenAI Vision validation: remove unrealistic detections, correct misclassifications, no fabrication
     let visionLabels = await validateWithVision(imageBuffer, labels);
     // Minimum 3 objects guarantee: backfill from COCO detections if Vision returned fewer

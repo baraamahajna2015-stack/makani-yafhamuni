@@ -9,6 +9,7 @@ import { analyzeEnvironment, buildActivitiesFromEnvironment, type EnvironmentEle
 import { refineActivities } from './refinement';
 import { inferSceneFromObjects } from './scene-reasoning';
 import { enrichElementsWithSafety, validateAndReplaceActivities } from './safety-validation';
+import { validateWithVision } from './vision-validation';
 
 export const runtime = 'nodejs';
 
@@ -25,6 +26,12 @@ function getModel() {
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("🔥 VISION ROUTE WORKING");
+    if (!process.env.OPENAI_API_KEY) {
+      console.log("❌ NO OPENAI API KEY FOUND");
+    } else {
+      console.log("✅ OPENAI API KEY IS SET");
+    }
     const formData = await req.formData();
 
     const imageFile = formData.get('image');
@@ -95,17 +102,53 @@ export async function POST(req: NextRequest) {
 
     const labels = filteredPredictions.map((p) => p.className);
 
-    const reasonedElements: ReasonedElement[] = reasonOverDetections(
-      filteredPredictions.map((p) => ({ className: p.className, probability: p.probability }))
+    // OpenAI Vision validation: remove unrealistic detections, correct misclassifications, no fabrication
+    let visionLabels = await validateWithVision(imageBuffer, labels);
+    // Minimum 3 objects guarantee: backfill from COCO detections if Vision returned fewer
+    const MIN_OBJECTS = 3;
+    if (visionLabels.length < MIN_OBJECTS) {
+      const visionSet = new Set(visionLabels.map((l) => l.toLowerCase().trim()));
+      for (const p of filteredPredictions) {
+        if (visionSet.size >= MIN_OBJECTS) break;
+        const key = p.className.toLowerCase().trim();
+        if (!visionSet.has(key)) {
+          visionSet.add(key);
+          visionLabels = [...visionLabels, p.className];
+        }
+      }
+    }
+
+    // Build predictions for downstream (match vision-validated labels to probabilities)
+    const predictionByClass = new Map(
+      filteredPredictions.map((p) => [p.className.toLowerCase().trim(), p])
     );
+    const predictionsForReason = visionLabels.map((className) => {
+      const found = predictionByClass.get(className.toLowerCase().trim());
+      return { className, probability: found ? found.probability : 0.8 };
+    });
+
+    const reasonedElements: ReasonedElement[] = reasonOverDetections(predictionsForReason);
     const { labels: validatedLabels, reasonedElements: validatedReasonedElements } = validateDetectedElements(
-      labels,
+      visionLabels,
       reasonedElements,
       age
     );
+    // Guarantee at least 3 real detected objects by backfilling from original predictions (sorted by confidence)
+    let finalLabels = [...validatedLabels];
+    if (finalLabels.length < 3) {
+      const finalSet = new Set(finalLabels.map((l) => l.toLowerCase().trim()));
+      for (const p of filteredPredictions) {
+        if (finalLabels.length >= 3) break;
+        const key = p.className.toLowerCase().trim();
+        if (!finalSet.has(key)) {
+          finalSet.add(key);
+          finalLabels.push(p.className);
+        }
+      }
+    }
     const labelToNameAr = new Map(validatedReasonedElements.map((r) => [r.rawLabel, r.elementNameAr]));
 
-    const elements = analyzeEnvironment(validatedLabels);
+    const elements = analyzeEnvironment(finalLabels);
     enrichElementsWithSafety(elements);
     let envActivities = buildActivitiesFromEnvironment(elements, age, 5);
     envActivities = validateAndReplaceActivities(envActivities, elements, age);
@@ -121,20 +164,20 @@ export async function POST(req: NextRequest) {
 
     const { labelsArabic, activitiesArabic } = formatActivitiesInArabic(
       activities,
-      validatedLabels,
+      finalLabels,
       age,
       userMode,
       labelToNameAr
     );
-    const labelsArabicWithReasoning = validatedLabels.map(
+    const labelsArabicWithReasoning = finalLabels.map(
       (label, i) => labelToNameAr.get(label) ?? labelsArabic[i]
     );
 
-    const environmentSummary = inferSceneFromObjects(validatedLabels);
+    const environmentSummary = inferSceneFromObjects(finalLabels);
 
     return NextResponse.json({
       age,
-      labels: validatedLabels,
+      labels: finalLabels,
       labelsArabic: labelsArabicWithReasoning,
       activities,
       activitiesArabic,

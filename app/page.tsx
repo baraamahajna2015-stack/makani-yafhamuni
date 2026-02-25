@@ -319,7 +319,8 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={() => {
-                      const text = result.activitiesArabic
+                      stopSpeech();
+                      const fullText = result.activitiesArabic
                         .map((activity) => {
                           const parts: string[] = [
                             `اسم النشاط: ${activity.formattedArabic.activityName}`,
@@ -332,11 +333,11 @@ export default function Home() {
                           return parts.join(". ");
                         })
                         .join("\n\n");
-                      speakArabic(text);
+                      speakArabic(fullText);
                     }}
                     className="rounded-lg bg-[#1a2f4a] px-4 py-2.5 text-sm font-medium text-white shadow-md transition hover:bg-[#243b52] focus:outline-none focus:ring-2 focus:ring-[#1a2f4a] focus:ring-offset-2 dark:bg-[#1e3a5f] dark:hover:bg-[#264a6f]"
                   >
-                    🔊 تشغيل الإرشادات
+                    🔊 تشغيل جميع الإرشادات
                   </button>
                   <button
                     type="button"
@@ -354,9 +355,31 @@ export default function Home() {
                       style={{ animationDelay: `${index * 70}ms` }}
                       dir="rtl"
                     >
-                      <p className="mb-5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                        {activity.therapeuticFocusArabic} • {ensureArabicDisplayName(activity.objectLabelArabic)}
-                      </p>
+                      <div className="mb-5 flex items-center justify-between gap-2">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                          {activity.therapeuticFocusArabic} • {ensureArabicDisplayName(activity.objectLabelArabic)}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            stopSpeech();
+                            const parts: string[] = [
+                              `اسم النشاط: ${activity.formattedArabic.activityName}`,
+                              `الهدف العلاجي: ${activity.formattedArabic.therapeuticGoal}`,
+                              "طريقة التنفيذ:",
+                              ...activity.formattedArabic.implementationSteps.map((step, i) => `${i + 1}. ${step}`),
+                              `تعديل حسب العمر: ${activity.formattedArabic.ageAdaptations}`,
+                              `مؤشرات نجاح: ${activity.formattedArabic.successIndicators}`,
+                            ];
+                            speakArabic(parts.join(". "));
+                          }}
+                          className="shrink-0 rounded-md border border-zinc-200 bg-zinc-50 p-1.5 text-sm leading-none text-zinc-600 transition hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 dark:focus:ring-zinc-500"
+                          title="تشغيل إرشادات هذا النشاط"
+                          aria-label="تشغيل إرشادات هذا النشاط"
+                        >
+                          🔊
+                        </button>
+                      </div>
                       <div className="space-y-5 text-sm leading-loose">
                         <div>
                           <p className="mb-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300">

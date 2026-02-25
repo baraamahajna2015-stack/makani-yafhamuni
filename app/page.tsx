@@ -3,6 +3,7 @@
 import { useState, useEffect, type FormEvent } from "react";
 import { FORM, HERO, SECTIONS, ERRORS, USER_MODE_LABELS, INSIGHT } from "./ui-strings";
 import { ensureArabicDisplayName } from "./arabic-safeguard";
+import { speakArabic, stopSpeech } from "@/utils/speech";
 
 const LOADING_MESSAGES = [
   "جاري تحليل عناصر البيئة...",
@@ -314,6 +315,37 @@ export default function Home() {
                 <h2 className="text-xl font-semibold leading-snug tracking-tight text-[#1a2f4a] dark:text-[#94a8c4]">
                   {SECTIONS.suggestedActivities}
                 </h2>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const text = result.activitiesArabic
+                        .map((activity) => {
+                          const parts: string[] = [
+                            `اسم النشاط: ${activity.formattedArabic.activityName}`,
+                            `الهدف العلاجي: ${activity.formattedArabic.therapeuticGoal}`,
+                            "طريقة التنفيذ:",
+                            ...activity.formattedArabic.implementationSteps.map((step, i) => `${i + 1}. ${step}`),
+                            `تعديل حسب العمر: ${activity.formattedArabic.ageAdaptations}`,
+                            `مؤشرات نجاح: ${activity.formattedArabic.successIndicators}`,
+                          ];
+                          return parts.join(". ");
+                        })
+                        .join("\n\n");
+                      speakArabic(text);
+                    }}
+                    className="rounded-lg bg-[#1a2f4a] px-4 py-2.5 text-sm font-medium text-white shadow-md transition hover:bg-[#243b52] focus:outline-none focus:ring-2 focus:ring-[#1a2f4a] focus:ring-offset-2 dark:bg-[#1e3a5f] dark:hover:bg-[#264a6f]"
+                  >
+                    🔊 تشغيل الإرشادات
+                  </button>
+                  <button
+                    type="button"
+                    onClick={stopSpeech}
+                    className="rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 shadow-md transition hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+                  >
+                    ⏹ إيقاف الصوت
+                  </button>
+                </div>
                 <ul className="mt-5 space-y-10 text-zinc-800 dark:text-zinc-100">
                   {result.activitiesArabic.map((activity, index) => (
                     <li
